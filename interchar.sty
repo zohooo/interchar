@@ -27,10 +27,10 @@
 \cs_generate_variant:Nn \tl_replace_once:Nnn { Nxx }
 
 % Renaming some primitive commands of XeTeX
-\cs_new_eq:NN \_xetex_interchartokenstate \XeTeXinterchartokenstate
-\cs_new_eq:NN \_xetex_newintercharclass \newXeTeXintercharclass
-\cs_new_eq:NN \_xetex_charclass \XeTeXcharclass
-\cs_new_eq:NN \_xetex_interchartoks \XeTeXinterchartoks
+\cs_new_eq:NN \xetex_intercharstate:D \XeTeXinterchartokenstate
+\cs_new_eq:NN \xetex_newcharclass:D \newXeTeXintercharclass
+\cs_new_eq:NN \xetex_charclass:D \XeTeXcharclass
+\cs_new_eq:NN \xetex_interchartoks:D \XeTeXinterchartoks
 
 % Need to update them according to unicode-letters.tex
 \clist_new:N \g_interchar_default_classes_clist
@@ -99,22 +99,22 @@
     \cs_new_protected_nopar:cpn { #1interchartokenstate }
       {
         \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_state_tmpa
+        \__interchar_state_auxi:w
       }
     \cs_new_protected_nopar:cpn { new#1intercharclass } ##1
       {
         \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_newclass:nn {#1} {##1}
+        \interchar_newclass:nn {#1} {##1}
       }
     \cs_new_protected_nopar:cpn { #1charclass }
       {
         \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_class_tmpa
+        \__interchar_class_auxi:w
       }
     \cs_new_protected_nopar:cpn { #1interchartoks }
       {
         \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_toks_tmpa
+        \__interchar_toks_auxi:w
       }
   }
 
@@ -133,52 +133,52 @@
   }
 
 % Scanning arguments of \FOOinterchartokenstate command
-\cs_new_nopar:Npn \__interchar_state_tmpa
+\cs_new_nopar:Npn \__interchar_state_auxi:w
   {
-    \__interchar_scan_number:N \__interchar_state_tmpb
+    \__interchar_scan_number:N \__interchar_state_auxii:w
   }
-\cs_new_nopar:Npn \__interchar_state_tmpb
+\cs_new_nopar:Npn \__interchar_state_auxii:w
   {
     \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \__interchar_state:VV \l__interchar_scheme_name_tl \l_tmpa_int
+    \interchar_state:VV \l__interchar_scheme_name_tl \l_tmpa_int
   }
 
 % Scanning arguments of \FOOcharclass command
-\cs_new_nopar:Npn \__interchar_class_tmpa
+\cs_new_nopar:Npn \__interchar_class_auxi:w
   {
-    \__interchar_scan_number_x:N \__interchar_class_tmpb
+    \__interchar_scan_number_x:N \__interchar_class_auxii:w
   }
-\cs_new_nopar:Npn \__interchar_class_tmpb
+\cs_new_nopar:Npn \__interchar_class_auxii:w
   {
     \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_number:N \__interchar_class_tmpc
+    \__interchar_scan_number:N \__interchar_class_auxiii:w
   }
-\cs_new_nopar:Npn \__interchar_class_tmpc
+\cs_new_nopar:Npn \__interchar_class_auxiii:w
   {
     \int_set:Nn \l_tmpb_int {\tex_the:D \tex_count:D 255}
-    \__interchar_class:VVV
+    \interchar_class:VVV
         \l__interchar_scheme_name_tl \l_tmpb_int \l_tmpa_int
   }
 
 % Scanning arguments of \FOOinterchartoks command
-\cs_new_nopar:Npn \__interchar_toks_tmpa
+\cs_new_nopar:Npn \__interchar_toks_auxi:w
   {
-    \__interchar_scan_number_x:N \__interchar_toks_tmpb
+    \__interchar_scan_number_x:N \__interchar_toks_auxii:w
   }
-\cs_new_nopar:Npn \__interchar_toks_tmpb
+\cs_new_nopar:Npn \__interchar_toks_auxii:w
   {
     \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_number_x:N \__interchar_toks_tmpc
+    \__interchar_scan_number_x:N \__interchar_toks_auxiii:w
   }
-\cs_new_nopar:Npn \__interchar_toks_tmpc
+\cs_new_nopar:Npn \__interchar_toks_auxiii:w
   {
     \int_set:Nn \l_tmpb_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_toks:N \__interchar_toks_tmpd
+    \__interchar_scan_toks:N \__interchar_toks_auxiv:w
   }
-\cs_new_nopar:Npn \__interchar_toks_tmpd
+\cs_new_nopar:Npn \__interchar_toks_auxiv:w
   {
     \tl_set:No \l_tmpa_tl {\tex_the:D \tex_toks:D 0}
-    \__interchar_toks:VVVV
+    \interchar_toks:VVVV
       \l__interchar_scheme_name_tl \l_tmpa_int \l_tmpb_int \l_tmpa_tl
   }
 
@@ -186,9 +186,9 @@
 % #1: scheme name; #2: state code
 \NewDocumentCommand \intercharstate { O{default} m }
   {
-    \__interchar_state:nn {#1} {#2}
+    \interchar_state:nn {#1} {#2}
   }
-\cs_new_protected_nopar:Npn \__interchar_state:nn #1#2
+\cs_new_protected_nopar:Npn \interchar_state:nn #1#2
   {
     \__interchar_clear_toks:V \g_interchar_current_scheme_tl
     \clist_map_inline:Nn \g_interchar_default_classes_clist
@@ -205,7 +205,7 @@
       }
       { \tl_gset:Nn \g_interchar_current_scheme_tl {default} }
   }
-\cs_generate_variant:Nn \__interchar_state:nn { VV }
+\cs_generate_variant:Nn \interchar_state:nn { VV }
 
 % #1: scheme name; #2: class number
 \cs_new_protected_nopar:Npn \__interchar_apply_class:nn #1#2
@@ -218,7 +218,7 @@
         \int_set:Nn \l_tmpb_int { "\l_tmpb_tl }
         \int_while_do:nn { \l_tmpa_int <= \l_tmpb_int }
           {
-            \_xetex_charclass \l_tmpa_int = #2
+            \xetex_charclass:D \l_tmpa_int = #2
             \int_incr:N \l_tmpa_int
           }
       }
@@ -228,14 +228,14 @@
 \cs_new_protected_nopar:Npn \__interchar_apply_toks:n #1
   {
     \prop_map_inline:cn { g_interchar_#1_toks_prop }
-      { \_xetex_interchartoks ##1 = {##2} }
+      { \xetex_interchartoks:D ##1 = {##2} }
   }
 
 % #1: scheme name
 \cs_new_protected_nopar:Npn \__interchar_clear_toks:n #1
   {
     \prop_map_inline:cn { g_interchar_#1_toks_prop }
-      { \_xetex_interchartoks ##1 = {} }
+      { \xetex_interchartoks:D ##1 = {} }
   }
 \cs_generate_variant:Nn \__interchar_clear_toks:n { V }
 
@@ -243,9 +243,9 @@
 % #1: scheme name; #2: control sequence for class number
 \NewDocumentCommand \newintercharclass { O{default} m}
   {
-    \__interchar_newclass:nn { #1 } { #2 }
+    \interchar_newclass:nn { #1 } { #2 }
   }
-\cs_new_protected_nopar:Npn \__interchar_newclass:nn #1#2
+\cs_new_protected_nopar:Npn \interchar_newclass:nn #1#2
   {
     \int_set:Nn \l_tmpa_int { \int_use:N \use:c {g_interchar_#1_newclass_int} }
     \int_new:N #2
@@ -259,10 +259,10 @@
 % #1: scheme name; #2: class number; #3: char code
 \NewDocumentCommand \intercharclass { O{default} m m }
   {
-    \__interchar_class:nnn {#1} {#2} {#3}
+    \interchar_class:nnn {#1} {#2} {#3}
   }
 \bool_new:N \g__interchar_class_delete_char_bool
-\cs_new_protected_nopar:Npn \__interchar_class:nnn #1#2#3
+\cs_new_protected_nopar:Npn \interchar_class:nnn #1#2#3
   {
     \int_compare:nT { #2 > 0 }
       {
@@ -288,7 +288,7 @@
           }
       }
   }
-\cs_generate_variant:Nn \__interchar_class:nnn { VVV }
+\cs_generate_variant:Nn \interchar_class:nnn { VVV }
 
 % #1: scheme name; #2: class number; #3 char code
 \cs_new_protected_nopar:Npn \__interchar_class_insert_char:nnn #1#2#3
@@ -485,9 +485,9 @@
 % #1: scheme name; #2 and #3: class numbers; #4: tokens
 \NewDocumentCommand \interchartoks { O{default} m m +m }
   {
-    \__interchar_toks:nnnn {#1} {#2} {#3} {#4}
+    \interchar_toks:nnnn {#1} {#2} {#3} {#4}
   }
-\cs_new_protected_nopar:Npn \__interchar_toks:nnnn #1#2#3#4
+\cs_new_protected_nopar:Npn \interchar_toks:nnnn #1#2#3#4
   {
     \int_set:Nn \l_tmpa_int {#2}
     \int_set:Nn \l_tmpb_int {#3}
@@ -495,13 +495,13 @@
         { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int }
         { #4 }
   }
-\cs_generate_variant:Nn \__interchar_toks:nnnn { VVVV }
+\cs_generate_variant:Nn \interchar_toks:nnnn { VVVV }
 
 \cs_new_nopar:Npn \interchar_int_to_roman:n #1
  {
    \int_compare:nTF { #1 = 0 } { o } { \int_to_roman:n{#1} }
  }
 
-\_xetex_interchartokenstate = 1
+\xetex_intercharstate:D = 1
 
 \ExplSyntaxOff
