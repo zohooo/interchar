@@ -44,7 +44,7 @@ Testing \verb-\__interchar_class_split_range:nNN-
 
 Testing \verb-\newintercharscheme{FOO}-
 \newintercharscheme{FOO}
-\cs_if_exist:NTF \g_interchar_FOO_chars_iii_clist {\passed}{\failed}
+\cs_if_exist:cTF {g_interchar_FOO_chars_3_clist} {\passed}{\failed}
 
 Testing \verb-\newintercharclass[FOO]{#2}-
 \newintercharclass[FOO]{\myclassU}
@@ -64,34 +64,34 @@ Testing \verb-\newFOOintercharclass #1-
 % '101 '106 '113 '120 '125 '132 '141 '146 '153 '160 '165 '172
 Testing \verb-\intercharclass[FOO]{#2}{#3}-
 \intercharclass[FOO]{9}{"4B}
-\cs_if_exist:NTF \g_interchar_FOO_chars_ix_clist {\passed}{\failed}
+\cs_if_exist:cTF {g_interchar_FOO_chars_9_clist} {\passed}{\failed}
 \intercharclass[FOO]{0}{"4B}
-\clist_if_empty:NTF \g_interchar_FOO_chars_ix_clist {\passed}{\failed}
+\clist_if_empty:cTF {g_interchar_FOO_chars_9_clist} {\passed}{\failed}
 \intercharclass[FOO]{1}{"5A}
 \intercharclass[FOO]{2}{"5A}
-\clist_if_in:NnTF \g_interchar_FOO_chars_ii_clist {5A} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_2_clist} {5A} {\passed}{\failed}
 \intercharclass[FOO]{3}{"5A}
-\clist_if_empty:NTF \g_interchar_FOO_chars_ii_clist {\passed}{\failed}
+\clist_if_empty:cTF {g_interchar_FOO_chars_2_clist} {\passed}{\failed}
 
 Testing \verb-\FOOcharclass #1 = #2-
 \FOOcharclass `\c = \myclassU
 \FOOcharclass `\b = \myclassU
 \FOOcharclass `\a = \myclassU
-\clist_if_in:NnTF \g_interchar_FOO_chars_iv_clist {61-63} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_4_clist} {61-63} {\passed}{\failed}
 \FOOcharclass `\y \myclassV
 \FOOcharclass `\z \myclassV
-\clist_if_in:NnTF \g_interchar_FOO_chars_v_clist {79-7A} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_5_clist} {79-7A} {\passed}{\failed}
 \FOOcharclass "43 9
 \FOOcharclass "45 9
 \FOOcharclass "44 9
-\clist_if_in:NnTF \g_interchar_FOO_chars_ix_clist {43-45} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_9_clist} {43-45} {\passed}{\failed}
 \FOOcharclass `\L 9
 \FOOcharclass `\M 9
 \FOOcharclass `\O 9
 \FOOcharclass `\N 9
-\clist_if_in:NnTF \g_interchar_FOO_chars_ix_clist {4C-4F} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_9_clist} {4C-4F} {\passed}{\failed}
 \FOOcharclass `\N 0
-\clist_if_in:NnTF \g_interchar_FOO_chars_ix_clist {4C-4D} {\passed}{\failed}
+\clist_if_in:cnTF {g_interchar_FOO_chars_9_clist} {4C-4D} {\passed}{\failed}
 \FOOcharclass `\L 0
 \FOOcharclass `\M 0
 \FOOcharclass `\N 0
@@ -99,7 +99,7 @@ Testing \verb-\FOOcharclass #1 = #2-
 \FOOcharclass `\E 0
 \FOOcharclass `\C 0
 \FOOcharclass `\D 0
-\clist_if_empty:NTF \g_interchar_FOO_chars_ix_clist {\passed}{\failed}
+\clist_if_empty:cTF {g_interchar_FOO_chars_9_clist} {\passed}{\failed}
 
 Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
 \interchartoks[FOO]{\myclassU}{\myclassV}{{\color{red}zzz}}
@@ -176,11 +176,11 @@ The quick brown fox jumps over the lazy dog.
 
 % ------------------------------------------------------------------------------
 
-%\clist_show:N \g_interchar_default_chars_i_clist
-%\clist_show:N \g_interchar_default_chars_ii_clist
-%\clist_show:N \g_interchar_default_chars_iii_clist
-%\clist_show:N \g_interchar_FOO_chars_iv_clist
-%\clist_show:N \g_interchar_FOO_chars_v_clist
+%\clist_show:c {g_interchar_default_chars_1_clist}
+%\clist_show:c {g_interchar_default_chars_2_clist}
+%\clist_show:c {g_interchar_default_chars_3_clist}
+%\clist_show:c {g_interchar_FOO_chars_4_clist}
+%\clist_show:c {g_interchar_FOO_chars_5_clist}
 %\prop_show:N \g_interchar_FOO_toks_prop
 %\prop_show:N \g_interchar_BAR_toks_prop
 

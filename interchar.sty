@@ -37,23 +37,23 @@
 \clist_gset:Nn \g_interchar_default_classes_clist { 1, 2, 3 }
 \int_new:N  \g_interchar_default_newclass_int
 \int_gset:Nn \g_interchar_default_newclass_int { 4 }
-\clist_new:N \g_interchar_default_chars_o_clist
-\clist_gset:Nn \g_interchar_default_chars_o_clist
+\clist_new:c { g_interchar_default_chars_0_clist }
+\clist_gset:cn { g_interchar_default_chars_0_clist }
   {
     1-3000, 3003-3007, 3010-33FF, 4DB6-4DFF, 9FCD-FF07, FF0A-FF0B, FF0D, FF0F-FFFF
   }
-\clist_new:N \g_interchar_default_chars_i_clist
-\clist_gset:Nn \g_interchar_default_chars_i_clist
+\clist_new:c { g_interchar_default_chars_1_clist }
+\clist_gset:cn { g_interchar_default_chars_1_clist }
   {
     3400-4DB5, 4E00-9FCC
   }
-\clist_new:N \g_interchar_default_chars_ii_clist
-\clist_gset:Nn \g_interchar_default_chars_ii_clist
+\clist_new:c  { g_interchar_default_chars_2_clist }
+\clist_gset:cn { g_interchar_default_chars_2_clist }
   {
     3008, 300A, 300C, 300E, FF08
   }
-\clist_new:N \g_interchar_default_chars_iii_clist
-\clist_gset:Nn \g_interchar_default_chars_iii_clist
+\clist_new:c { g_interchar_default_chars_3_clist }
+\clist_gset:cn { g_interchar_default_chars_3_clist }
   {
     3001-3002, 3009, 300B, 300D, 300F, FF09, FF0C, FF0E
   }
@@ -91,9 +91,9 @@
     \clist_gset:cn { g_interchar_#1_classes_clist } { 1, 2, 3 }
     \int_new:c { g_interchar_#1_newclass_int }
     \int_gset:cn { g_interchar_#1_newclass_int } { 4 }
-    \clist_new:c { g_interchar_#1_chars_i_clist }
-    \clist_new:c { g_interchar_#1_chars_ii_clist }
-    \clist_new:c { g_interchar_#1_chars_iii_clist }
+    \clist_new:c { g_interchar_#1_chars_1_clist }
+    \clist_new:c { g_interchar_#1_chars_2_clist }
+    \clist_new:c { g_interchar_#1_chars_3_clist }
     \prop_new:c { g_interchar_#1_toks_prop }
     % Used for migrating from XeTeX's primitive commands
     \cs_new_protected_nopar:cpn { #1interchartokenstate }
@@ -211,7 +211,7 @@
 \cs_new_protected_nopar:Npn \__interchar_apply_class:nn #1#2
   {
     \clist_map_inline:cn
-      { g_interchar_#1_chars_ \interchar_int_to_roman:n{#2} _clist }
+      { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
       {
         \__interchar_class_split_range:nNN {##1} \l_tmpa_tl \l_tmpb_tl
         \int_set:Nn \l_tmpa_int { "\l_tmpa_tl }
@@ -251,7 +251,7 @@
     \int_new:N #2
     \int_set_eq:NN #2 \l_tmpa_int
     \clist_put_right:co {g_interchar_#1_classes_clist} {\int_use:N \l_tmpa_int}
-    \clist_new:c { g_interchar_#1_chars_ \int_to_roman:n\l_tmpa_int _clist }
+    \clist_new:c { g_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
     \int_incr:c { g_interchar_#1_newclass_int }
   }
 
@@ -273,7 +273,7 @@
             \clist_put_right:co { g_interchar_#1_classes_clist }
                 { \int_use:N\l_tmpa_int }
             \clist_new:c
-                { g_interchar_#1_chars_ \int_to_roman:n\l_tmpa_int _clist }
+                { g_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
           }
         \__interchar_class_insert_char:nnn {#1} {#2} {#3}
       }
@@ -294,7 +294,7 @@
 \cs_new_protected_nopar:Npn \__interchar_class_insert_char:nnn #1#2#3
   {
     \clist_set_eq:Nc
-        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_roman:n{#2} _clist }
+        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
     % maximal char range before #3
     \tl_set:Nn \l__interchar_u_tl {FFFFFF}
     \tl_set:Nn \l__interchar_v_tl {FFFFFF}
@@ -392,7 +392,7 @@
           }
       }
     \clist_gset_eq:cN
-        { g_interchar_#1_chars_ \int_to_roman:n{#2} _clist } \l_tmpa_clist
+        { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist } \l_tmpa_clist
   }
 
 % High level \intercharclass command
@@ -400,7 +400,7 @@
 \cs_new_protected_nopar:Npn \__interchar_class_delete_char:nnn #1#2#3
   {
     \clist_set_eq:Nc
-        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_roman:n{#2} _clist }
+        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
     % if the character exists
     \bool_set_false:N \l_tmpa_bool
     \clist_map_inline:Nn \l_tmpa_clist
@@ -469,7 +469,7 @@
       }
     % to remove an extra comma, use \clist_gset rather than \clist_gset_eq
     \clist_gset:co
-        { g_interchar_#1_chars_ \int_to_roman:n{#2} _clist } { \l_tmpa_clist }
+        { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist } { \l_tmpa_clist }
   }
 
 % Split #1 with - and put the results into #2 and #3
@@ -496,11 +496,6 @@
         { #4 }
   }
 \cs_generate_variant:Nn \interchar_toks:nnnn { VVVV }
-
-\cs_new_nopar:Npn \interchar_int_to_roman:n #1
- {
-   \int_compare:nTF { #1 = 0 } { o } { \int_to_roman:n{#1} }
- }
 
 \xetex_intercharstate:D = 1
 
