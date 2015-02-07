@@ -9,19 +9,14 @@
 % Some more scratch variables
 \tl_new:N \l__interchar_a_tl
 \tl_new:N \l__interchar_b_tl
-\tl_new:N \l__interchar_c_tl
-\tl_new:N \l__interchar_r_tl
-\tl_new:N \l__interchar_s_tl
-\tl_new:N \l__interchar_u_tl
-\tl_new:N \l__interchar_v_tl
-\tl_new:N \l__interchar_w_tl
 \tl_new:N \l__interchar_x_tl
 \tl_new:N \l__interchar_y_tl
 \tl_new:N \l__interchar_ab_tl
-\tl_new:N \l__interchar_uv_tl
 \tl_new:N \l__interchar_xy_tl
 
 % Generate variants for some functions
+\cs_generate_variant:Nn \clist_gconcat:NNN { c }
+\cs_generate_variant:Nn \int_to_hexadecimal:n { V }
 \cs_generate_variant:Nn \prop_gput:Nnn { cx }
 \cs_generate_variant:Nn \tl_if_eq:nnTF { o }
 \cs_generate_variant:Nn \tl_replace_once:Nnn { Nxx }
@@ -290,194 +285,135 @@
   }
 \cs_generate_variant:Nn \interchar_class:nnn { VVV }
 
-% #1: scheme name; #2: class number; #3 char code
+% #1: scheme name; #2: class number; #3 char range
 \cs_new_protected_nopar:Npn \__interchar_class_insert_char:nnn #1#2#3
   {
+    % store all char ranges before #3
+    \clist_clear:N \l_tmpa_clist
+    % store all char ranges after #3
     \clist_set_eq:Nc
-        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
-    % maximal char range before #3
-    \tl_set:Nn \l__interchar_u_tl {FFFFFF}
-    \tl_set:Nn \l__interchar_v_tl {FFFFFF}
-    % minimal char range after #3
-    \tl_set:Nn \l__interchar_x_tl {FFFFFF}
-    \tl_set:Nn \l__interchar_y_tl {FFFFFF}
-    % if the character exists
+        \l_tmpb_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+    \__interchar_class_split_range:nNN {#3} \l__interchar_a_tl \l__interchar_b_tl
+    \tl_set:Nx \l_tmpa_tl { \int_to_hexadecimal:V \l__interchar_a_tl }
+    \tl_set:Nx \l_tmpb_tl { \int_to_hexadecimal:V \l__interchar_b_tl }
+    % if correct position found
     \bool_set_false:N \l_tmpa_bool
-    % if the class is empty
-    \bool_set_false:N \l_tmpb_bool
-    \clist_map_inline:Nn \l_tmpa_clist
+    \bool_do_until:Nn \l_tmpa_bool
       {
-        \__interchar_class_split_range:nNN
-            {##1} \l__interchar_a_tl \l__interchar_b_tl
-        \int_compare:nTF { #3 > "\l__interchar_b_tl}
+        \tl_if_empty:NTF \l_tmpb_clist
+          { \bool_set_true:N \l_tmpa_bool }
           {
-            \tl_set_eq:NN \l__interchar_u_tl \l__interchar_a_tl
-            \tl_set_eq:NN \l__interchar_v_tl \l__interchar_b_tl
-            \tl_set:Nn \l__interchar_uv_tl {##1}
-          }
-          {
-            \int_compare:nTF { #3 < "\l__interchar_a_tl}
+            \clist_pop:NN \l_tmpb_clist \l__interchar_xy_tl
+            \exp_args:NV \__interchar_class_split_range:nNN
+                { \l__interchar_xy_tl } \l__interchar_x_tl \l__interchar_y_tl
+            \int_compare:nTF { "\l__interchar_y_tl < "\l_tmpa_tl - 1 }
               {
-                \tl_set_eq:NN \l__interchar_x_tl \l__interchar_a_tl
-                \tl_set_eq:NN \l__interchar_y_tl \l__interchar_b_tl
-                \tl_set:Nn \l__interchar_xy_tl {##1}
+                % left
+                \clist_put_right:NV \l_tmpa_clist \l__interchar_xy_tl
               }
               {
-                \bool_set_true:N \l_tmpa_bool
-              }
-            \clist_map_break:
-          }
-      }
-    \tl_set:Nx \l__interchar_w_tl { \int_to_hexadecimal:n { #3 } }
-    % replace \l__interchar_r_tl with \l__interchar_s_tl
-    \int_compare:nTF { #3 = "\l__interchar_v_tl + 1 }
-      {
-        \int_compare:nTF { #3 + 1 = "\l__interchar_x_tl }
-          {
-            % replace "u-v,x-y" with "u-y"
-            \tl_set:Nx \l__interchar_r_tl
-              { \tl_use:N \l__interchar_uv_tl , \tl_use:N \l__interchar_xy_tl }
-            \tl_set:Nx \l__interchar_s_tl
-              { \tl_use:N \l__interchar_u_tl - \tl_use:N \l__interchar_y_tl }
-          }
-          {
-            % replace "u-v" with "u-w"
-            \tl_set:Nx \l__interchar_r_tl
-              { \tl_use:N \l__interchar_uv_tl}
-            \tl_set:Nx \l__interchar_s_tl
-              { \tl_use:N \l__interchar_u_tl - \tl_use:N \l__interchar_w_tl }
-          }
-      }
-      {
-        \int_compare:nTF { #3 + 1 = "\l__interchar_x_tl }
-          {
-            % replace "x-y" with "w-y"
-            \tl_set:Nx \l__interchar_r_tl
-              { \tl_use:N \l__interchar_xy_tl}
-            \tl_set:Nx \l__interchar_s_tl
-              { \tl_use:N \l__interchar_w_tl - \tl_use:N \l__interchar_y_tl }
-          }
-          {
-            % replace "v,x" with "v,w,x"
-            % "v" or "x" may not exist, i.e, may be "FFFFFF"
-            \tl_if_eq:onTF {\l__interchar_v_tl} {FFFFFF}
-              {
-                \tl_if_eq:onTF {\l__interchar_x_tl} {FFFFFF}
+                \int_compare:nTF { "\l__interchar_x_tl > "\l_tmpb_tl + 1}
                   {
-                    \bool_set_true:N \l_tmpb_bool
+                    % right
+                    \clist_put_left:NV \l_tmpb_clist \l__interchar_xy_tl
+                    \bool_set_true:N \l_tmpa_bool
                   }
                   {
-                    \tl_set:Nx \l__interchar_r_tl { \tl_use:N \l__interchar_x_tl}
-                    \tl_set:Nx \l__interchar_s_tl
-                      {\tl_use:N \l__interchar_w_tl,\tl_use:N \l__interchar_x_tl}
+                    % middle
+                    \int_compare:nT { "\l__interchar_x_tl < "\l_tmpa_tl }
+                        { \tl_set_eq:NN \l_tmpa_tl \l__interchar_x_tl }
+                    \int_compare:nT { "\l__interchar_y_tl > "\l_tmpb_tl }
+                        { \tl_set_eq:NN \l_tmpb_tl \l__interchar_y_tl }
                   }
               }
-              {
-                \tl_set:Nx \l__interchar_r_tl { \tl_use:N \l__interchar_v_tl}
-                \tl_set:Nx \l__interchar_s_tl
-                  { \tl_use:N \l__interchar_v_tl,\tl_use:N \l__interchar_w_tl }
-              }
           }
       }
-    \bool_if:NF \l_tmpa_bool % if current class contains the char code
-      {
-        \bool_if:NTF \l_tmpb_bool % if current class is empty
-          {
-            \clist_put_right:Nx \l_tmpa_clist { \tl_use:N \l__interchar_w_tl }
-          }
-          {
-            \tl_replace_once:Nxx \l_tmpa_clist
-                { \tl_use:N \l__interchar_r_tl }
-                { \tl_use:N \l__interchar_s_tl }
-          }
-      }
-    \clist_gset_eq:cN
-        { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist } \l_tmpa_clist
+    \tl_if_eq:NNTF \l_tmpa_tl \l_tmpb_tl
+      { \tl_set_eq:NN \l__interchar_ab_tl \l_tmpa_tl }
+      { \tl_set:Nx \l__interchar_ab_tl { \l_tmpa_tl - \l_tmpb_tl } }
+    \clist_put_right:NV \l_tmpa_clist \l__interchar_ab_tl
+    \clist_gconcat:cNN { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+                       \l_tmpa_clist \l_tmpb_clist
   }
 
 % High level \intercharclass command
-% #1: scheme name; #2: class number; #3: char code
+% #1: scheme name; #2: class number; #3: char range
 \cs_new_protected_nopar:Npn \__interchar_class_delete_char:nnn #1#2#3
   {
+    % store all char ranges before #3
+    \clist_clear:N \l_tmpa_clist
+    % store all char ranges after #3
     \clist_set_eq:Nc
-        \l_tmpa_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
-    % if the character exists
+        \l_tmpb_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+    \__interchar_class_split_range:nNN {#3} \l__interchar_a_tl \l__interchar_b_tl
+    \tl_set:Nx \l_tmpa_tl { \int_to_hexadecimal:V \l__interchar_a_tl }
+    \tl_set:Nx \l_tmpb_tl { \int_to_hexadecimal:V \l__interchar_b_tl }
+    % if correct position found
     \bool_set_false:N \l_tmpa_bool
-    \clist_map_inline:Nn \l_tmpa_clist
+    \bool_do_until:Nn \l_tmpa_bool
       {
-        \__interchar_class_split_range:nNN
-            {##1} \l__interchar_a_tl \l__interchar_b_tl
-%       \int_compare:nT { "\l__interchar_a_tl <= #3 <= "\l__interchar_b_tl}
-        \bool_if:nT
+        \tl_if_empty:NTF \l_tmpb_clist
+          { \bool_set_true:N \l_tmpa_bool }
           {
-            \int_compare_p:n { "\l__interchar_a_tl <= #3 }
-            && \int_compare_p:n { #3 <= "\l__interchar_b_tl }
-          }
-          {
-            \tl_set:Nn \l__interchar_ab_tl {##1}
-            \bool_set_true:N \l_tmpa_bool
-            \clist_map_break:
+            \clist_pop:NN \l_tmpb_clist \l__interchar_xy_tl
+            \exp_args:NV \__interchar_class_split_range:nNN
+                { \l__interchar_xy_tl } \l__interchar_x_tl \l__interchar_y_tl
+            \int_compare:nTF { "\l__interchar_y_tl < "\l_tmpa_tl}
+              {
+                % left
+                \clist_put_right:NV \l_tmpa_clist \l__interchar_xy_tl
+              }
+              {
+                \int_compare:nTF { "\l__interchar_x_tl > "\l_tmpb_tl}
+                  {
+                    % right
+                    \clist_put_left:NV \l_tmpb_clist \l__interchar_xy_tl
+                    \bool_set_true:N \l_tmpa_bool
+                  }
+                  {
+                    % middle: put [x,a-1] and [b+1,y] into clist
+                    \int_compare:nTF { "\l_tmpa_tl - "\l__interchar_x_tl = 1 }
+                      {
+                        \clist_put_right:NV \l_tmpa_clist \l__interchar_x_tl
+                      }
+                      {
+                        \int_compare:nT { "\l_tmpa_tl - "\l__interchar_x_tl > 1 }
+                        {
+                          \tl_set:Nx \l__interchar_z_tl
+                              { \int_to_hexadecimal:n { "\l_tmpa_tl - 1 } }
+                          \clist_put_right:Nx \l_tmpa_clist
+                              { \l__interchar_x_tl - \l__interchar_z_tl }
+                        }
+                      }
+                    \int_compare:nTF { "\l__interchar_y_tl - "\l_tmpb_tl = 1 }
+                      {
+                        \clist_put_right:NV \l_tmpa_clist \l__interchar_y_tl
+                      }
+                      {
+                        \int_compare:nT { "\l__interchar_y_tl - "\l_tmpb_tl > 1 }
+                        {
+                          \tl_set:Nx \l__interchar_z_tl
+                              { \int_to_hexadecimal:n { "\l_tmpb_tl + 1 } }
+                          \clist_put_right:Nx \l_tmpa_clist
+                              { \l__interchar_z_tl - \l__interchar_y_tl }
+                        }
+                      }
+                    \tl_if_eq:NNT \l_tmpa_tl \l_tmpb_tl
+                        { \bool_set_true:N \g__interchar_class_delete_char_bool }
+                  }
+              }
           }
       }
-    \bool_if:NT \l_tmpa_bool % if current class contains the char code
-      {
-        \bool_set_true:N \g__interchar_class_delete_char_bool
-        \tl_set:Nx \l__interchar_w_tl { \int_to_hexadecimal:n { #3 } }
-        \tl_set:Nx \l__interchar_x_tl { \int_to_hexadecimal:n { #3 - 1 } }
-        \tl_set:Nx \l__interchar_y_tl { \int_to_hexadecimal:n { #3 + 1} }
-%       \tl_set:Nn \l_tmpa_tl
-%         {
-%           \int_case:nnF { #3 - "\l__interchar_a_tl}
-%             {
-%               {0} {}
-%               {1} {\l__interchar_a_tl}
-%             }
-%             { \l__interchar_a_tl - \l__interchar_x_tl }
-%         }
-%       \tl_set:Nn \l_tmpb_tl
-%         {
-%           \int_case:nnF { "\l__interchar_b_tl - #3}
-%             {
-%               {0} {}
-%               {1} {\l__interchar_b_tl}
-%             }
-%             { \l__interchar_y_tl - \l__interchar_b_tl }
-%         }
-        \int_set:Nn \l_tmpa_int { #3 - "\l__interchar_a_tl }
-        \tl_set:Nx \l_tmpa_tl
-          {
-            \if_case:w \l_tmpa_int
-              \or: \l__interchar_a_tl
-              \else: \l__interchar_a_tl - \l__interchar_x_tl
-            \fi:
-          }
-        \int_set:Nn \l_tmpb_int { "\l__interchar_b_tl - #3 }
-        \tl_set:Nx \l_tmpb_tl
-          {
-            \if_case:w \l_tmpb_int
-              \or: \l__interchar_b_tl
-              \else: \l__interchar_y_tl - \l__interchar_b_tl
-            \fi:
-          }
-        \clist_clear:N \l_tmpb_clist
-        \tl_if_empty:NF \l_tmpa_tl
-           { \clist_put_right:Nx \l_tmpb_clist {\l_tmpa_tl} }
-        \tl_if_empty:NF \l_tmpb_tl
-           { \clist_put_right:Nx \l_tmpb_clist {\l_tmpb_tl} }
-        \tl_replace_once:Nxx \l_tmpa_clist
-          { \tl_use:N \l__interchar_ab_tl } { \tl_use:N \l_tmpb_clist }
-      }
-    % to remove an extra comma, use \clist_gset rather than \clist_gset_eq
-    \clist_gset:co
-        { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist } { \l_tmpa_clist }
+    \clist_gconcat:cNN { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+                       \l_tmpa_clist \l_tmpb_clist
   }
 
 % Split #1 with - and put the results into #2 and #3
 \NewDocumentCommand \__interchar_class_split_range:nNN
   { > { \SplitArgument { 1 } { - } } m m m}
   {
-    \tl_set:Nx #2 { \use_i:nn #1}
-    \tl_set:Nx #3 { \use_ii:nn #1}
+    \tl_set:No #2 { \use_i:nn #1}
+    \tl_set:No #3 { \use_ii:nn #1}
     \exp_args:No \IfNoValueT {#3} { \tl_set_eq:NN #3 #2 }
   }
 
