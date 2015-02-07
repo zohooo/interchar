@@ -1,0 +1,49 @@
+% -*- coding: utf-8 -*-
+\documentclass{article}
+\usepackage[b5paper]{geometry}
+\usepackage{interchar,xcolor}
+\begin{document}
+
+\newintercharscheme{FOO}
+
+\newintercharclass[FOO]{\myclassU}
+\intercharclass[FOO]{\myclassU}{`\o}
+
+\interchartoks[FOO]{0}{\myclassU}{\bgroup\color{red}}
+\interchartoks[FOO]{255}{\myclassU}{\bgroup\color{red}}
+\interchartoks[FOO]{\myclassU}{0}{\egroup}
+\interchartoks[FOO]{\myclassU}{255}{\egroup}
+
+\intercharstate[FOO]{1}
+
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+\newintercharscheme{BAR}
+
+\newintercharclass[BAR]{\myclassX}
+\intercharclass[BAR]{\myclassX}{`\u}
+\intercharclass[BAR]{\myclassX}{`\e}
+
+\interchartoks[BAR]{0}{\myclassX}{\bgroup\color{blue}}
+\interchartoks[BAR]{255}{\myclassX}{\bgroup\color{blue}}
+\interchartoks[BAR]{\myclassX}{0}{\egroup}
+\interchartoks[BAR]{\myclassX}{255}{\egroup}
+
+\intercharstate[BAR]{1}
+
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+\intercharstate[BAR]{0}
+
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+\end{document}
