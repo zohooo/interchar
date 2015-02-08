@@ -17,6 +17,7 @@
 % Generate variants for some functions
 \cs_generate_variant:Nn \clist_gconcat:NNN { c }
 \cs_generate_variant:Nn \int_to_hexadecimal:n { V }
+\cs_generate_variant:Nn \prop_get:NnN { cx }
 \cs_generate_variant:Nn \prop_gput:Nnn { cx }
 
 % Renaming some primitive commands of XeTeX
@@ -430,6 +431,16 @@
         { #4 }
   }
 \cs_generate_variant:Nn \interchar_toks:nnnn { VVVV }
+
+% #1: scheme name; #2 and #3: class numbers; #4: result control sequence
+\cs_new_protected_nopar:Npn \interchar_get_toks:nnnN #1#2#3#4
+  {
+    \int_set:Nn \l_tmpa_int {#2}
+    \int_set:Nn \l_tmpb_int {#3}
+    \prop_get:cxN { g_interchar_#1_toks_prop }
+        { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int } #4
+    \quark_if_no_value:NT #4 { \tl_clear:N #4 }
+  }
 
 \xetex_intercharstate:D = 1
 
