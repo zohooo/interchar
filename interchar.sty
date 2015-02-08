@@ -19,6 +19,7 @@
 \cs_generate_variant:Nn \int_to_hexadecimal:n { V }
 \cs_generate_variant:Nn \prop_get:NnN { cx }
 \cs_generate_variant:Nn \prop_gput:Nnn { cx }
+\cs_generate_variant:Nn \tl_if_eq:nnT { Vo }
 
 % Renaming some primitive commands of XeTeX
 \cs_new_eq:NN \xetex_intercharstate:D \XeTeXinterchartokenstate
@@ -429,6 +430,10 @@
     \prop_gput:cxn { g_interchar_#1_toks_prop }
         { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int }
         { #4 }
+    \tl_if_eq:VoT \g_interchar_current_scheme_tl { #1 }
+      {
+        \xetex_interchartoks:D \l_tmpa_int \l_tmpb_int = { #4 }
+      }
   }
 \cs_generate_variant:Nn \interchar_toks:nnnn { VVVV }
 
