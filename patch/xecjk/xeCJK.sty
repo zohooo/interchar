@@ -87,6 +87,14 @@
 \@ifpackagelater { xtemplate } { 2012/11/10 } { }
   { \msg_error:nnn { xeCJK } { l3-too-old } { xtemplate } }
 \RequirePackage { xparse , l3keys2e }
+\xeCJK_if_package_loaded:nTF {interchar}
+  { \newintercharscheme { xeCJK } }
+  {
+    \cs_set_eq:NN \xeCJKinterchartokenstate \XeTeXinterchartokenstate
+    \cs_set_eq:NN \newxeCJKintercharclass \newXeTeXintercharclass
+    \cs_set_eq:NN \xeCJKcharclass \XeTeXcharclass
+    \cs_set_eq:NN \xeCJKinterchartoks \XeTeXinterchartoks
+  }
 \tl_new:N \l__xeCJK_tmp_tl
 \int_new:N \l__xeCJK_tmp_int
 \box_new:N \l__xeCJK_tmp_box
@@ -368,8 +376,8 @@
     xeCJKactive / false .code:n = { \makexeCJKinactive } ,
     xeCJKactive      .default:n = { true }
   }
-\NewDocumentCommand \makexeCJKactive   { } { \XeTeXinterchartokenstate = \c_one  }
-\NewDocumentCommand \makexeCJKinactive { } { \XeTeXinterchartokenstate = \c_zero }
+\NewDocumentCommand \makexeCJKactive   { } { \xeCJKinterchartokenstate = \c_one  }
+\NewDocumentCommand \makexeCJKinactive { } { \xeCJKinterchartokenstate = \c_zero }
 \char_set_catcode_ignore:n { "FEFF }
 \seq_new:N \g__xeCJK_class_seq
 \seq_new:N \g__xeCJK_new_class_seq
@@ -378,7 +386,7 @@
     \int_if_exist:cTF { \__xeCJK_class_csname:n {#1} }
       { \__xeCJK_error:nx { class-already-defined } {#1} }
       {
-        \exp_args:Nc \newXeTeXintercharclass { \__xeCJK_class_csname:n {#1} }
+        \exp_args:Nc \newxeCJKintercharclass { \__xeCJK_class_csname:n {#1} }
         \clist_new:c { g__xeCJK_#1_range_clist }
         \seq_gput_right:Nn \g__xeCJK_class_seq {#1}
         \seq_gput_right:Nv \g__xeCJK_new_class_seq { \__xeCJK_class_csname:n {#1} }
@@ -566,26 +574,39 @@
     \char_set_catcode_letter:n { \l__xeCJK_begin_int }
     \int_incr:N \l__xeCJK_begin_int
   }
-\cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
+\xeCJK_if_package_loaded:nTF { interchar }
   {
-    \__xeCJK_check_num_range:nnNN {#1} {#2} \l__xeCJK_begin_int \l__xeCJK_end_int
-    \int_set:Nn \l__xeCJK_tmp_int {#3}
-    \xeCJK_int_until_do:nn { \l__xeCJK_begin_int > \l__xeCJK_end_int }
+    \cs_generate_variant:Nn \interchar_class:nnn { nVx }
+    \cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
       {
-        \XeTeXcharclass \l__xeCJK_begin_int = \l__xeCJK_tmp_int
-        \int_incr:N \l__xeCJK_begin_int
+        \__xeCJK_check_num_range:nnNN {#1} {#2} \l__xeCJK_begin_int \l__xeCJK_end_int
+        \int_set:Nn \l__xeCJK_tmp_int {#3}
+        \interchar_class:nVx { xeCJK } \l__xeCJK_tmp_int
+            { \int_use:N \l__xeCJK_begin_int - \int_use:N \l__xeCJK_end_int }
+      }
+  }
+  {
+    \cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
+      {
+        \__xeCJK_check_num_range:nnNN {#1} {#2} \l__xeCJK_begin_int \l__xeCJK_end_int
+        \int_set:Nn \l__xeCJK_tmp_int {#3}
+        \xeCJK_int_until_do:nn { \l__xeCJK_begin_int > \l__xeCJK_end_int }
+          {
+            \xeCJKcharclass \l__xeCJK_begin_int = \l__xeCJK_tmp_int
+            \int_incr:N \l__xeCJK_begin_int
+          }
       }
   }
 \cs_new_protected_nopar:Npn \__xeCJK_set_char_class_eq:nn #1#2
   {
     \int_set:Nn \l__xeCJK_tmp_int { \xeCJK_class_num:n {#2} }
     \clist_map_inline:cn { c__xeCJK_#1_chars_clist }
-      { \XeTeXcharclass ##1 = \l__xeCJK_tmp_int }
+      { \xeCJKcharclass ##1 = \l__xeCJK_tmp_int }
   }
 \NewDocumentCommand \normalspacedchars { m }
   {
     \tl_map_inline:nn {#1}
-      { \XeTeXcharclass `##1 = \xeCJK_class_num:n { NormalSpace } }
+      { \xeCJKcharclass `##1 = \xeCJK_class_num:n { NormalSpace } }
   }
 \NewDocumentCommand \xeCJKResetPunctClass { }
   {
@@ -604,33 +625,60 @@
   }
 \xeCJKResetCharClass
 \cs_new_protected_nopar:Npn \xeCJK_inter_class_toks:nnn #1#2#3
-  { \XeTeXinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} = {#3} }
-\cs_generate_variant:Nn \xeCJK_inter_class_toks:nnn { nnc , nnx }
-\cs_new_nopar:Npn \xeCJK_get_inter_class_toks:nn #1#2
-  { \tex_the:D \XeTeXinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} }
+  { \xeCJKinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} = {#3} }
+\cs_generate_variant:Nn \xeCJK_inter_class_toks:nnn { nnc , nnx, nnV }
+\xeCJK_if_package_loaded:nTF { interchar }
+  {
+    \cs_generate_variant:Nn \interchar_get_toks:nnnN { nxx }
+    \cs_new_protected_nopar:Npn \xeCJK_get_inter_class_toks:nnN #1#2#3
+      {
+        \interchar_get_toks:nxxN {xeCJK} {\xeCJK_class_num:n {#1}}
+                                 {\xeCJK_class_num:n {#2}} #3
+      }
+  }
+  {
+    \cs_new_protected_nopar:Npn \xeCJK_get_inter_class_toks:nnN #1#2#3
+      {
+        \tl_set:No #3 { \tex_the:D \XeTeXinterchartoks
+                        \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} }
+      }
+  }
+\cs_new_nopar:Npn \xeCJK_test_inter_class_toks:nn #1#2
+  {
+    \xeCJK_if_package_loaded:nT { interchar } { \interchargettrue }
+    \tex_the:D \xeCJKinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2}
+  }
 \cs_new_protected_nopar:Npn \xeCJK_clear_inter_class_toks:nn #1#2
   { \xeCJK_inter_class_toks:nnn {#1} {#2} { \prg_do_nothing: } }
 \cs_new_protected_nopar:Npn \xeCJK_pre_inter_class_toks:nnn #1#2#3
   {
+    \xeCJK_get_inter_class_toks:nnN {#1} {#2} \l__xeCJK_tmp_tl
     \xeCJK_inter_class_toks:nnx {#1} {#2}
-      { \exp_not:n {#3} \xeCJK_get_inter_class_toks:nn {#1} {#2} }
+      { \exp_not:n {#3} \exp_not:V \l__xeCJK_tmp_tl }
   }
-\cs_generate_variant:Nn \xeCJK_pre_inter_class_toks:nnn { nnx }
+\cs_generate_variant:Nn \xeCJK_pre_inter_class_toks:nnn { nnx, nnV }
+%\cs_new_protected_nopar:Npn \xeCJK_app_inter_class_toks:nnn #1#2#3
+%  {
+%    \xeCJK_get_inter_class_toks:nnN {#1} {#2} \l__xeCJK_tmp_tl
+%    \xeCJK_inter_class_toks:nnx {#1} {#2}
+%      { \exp_not:V \l__xeCJK_tmp_tl \exp_not:n {#3} }
+%  }
 \cs_new_protected_nopar:Npn \xeCJK_app_inter_class_toks:nnn #1#2#3
   {
+    \typeout{app~inter~class~toks}
     \xeCJK_inter_class_toks:nnx {#1} {#2}
-      { \xeCJK_get_inter_class_toks:nn {#1} {#2} \exp_not:n {#3} }
+      { \xeCJK_test_inter_class_toks:nn {#1} {#2} \exp_not:n {#3} }
   }
-\cs_generate_variant:Nn \xeCJK_app_inter_class_toks:nnn { nnc , nnx }
+\cs_generate_variant:Nn \xeCJK_app_inter_class_toks:nnn { nnc , nnx, nnV }
 \cs_new_protected_nopar:Npn \xeCJK_copy_inter_class_toks:nnnn #1#2#3#4
   {
-    \tl_set:Nx \l__xeCJK_tmp_tl { \xeCJK_get_inter_class_toks:nn {#3} {#4} }
+    \xeCJK_get_inter_class_toks:nnN {#3} {#4} \l__xeCJK_tmp_tl
     \tl_if_empty:NF \l__xeCJK_tmp_tl
       { \xeCJK_inter_class_toks:nnx {#1} {#2} { \exp_not:V \l__xeCJK_tmp_tl } }
   }
 \cs_new_protected_nopar:Npn \xeCJK_replace_inter_class_toks:nnnn #1#2#3#4
   {
-    \tl_set:Nx \l__xeCJK_tmp_tl { \xeCJK_get_inter_class_toks:nn {#1} {#2} }
+    \xeCJK_get_inter_class_toks:nnN {#3} {#4} \l__xeCJK_tmp_tl
     \tl_if_empty:NF \l__xeCJK_tmp_tl
       {
         \tl_replace_all:Nnn \l__xeCJK_tmp_tl {#3} {#4}
@@ -3300,7 +3348,7 @@
   {
     \int_set:Nn \l__xeCJK_tmp_int { \xeCJK_class_num:n {#1} }
     \clist_map_inline:cn { c__xeCJK_#1_chars_clist }
-      { \XeTeXcharclass ##1 = \l__xeCJK_tmp_int }
+      { \xeCJKcharclass ##1 = \l__xeCJK_tmp_int }
   }
 \bool_new:N \l__xeCJK_verb_addon_bool
 \cs_new_eq:NN \CJKfixedspacing \xeCJKVerbAddon
@@ -3732,7 +3780,7 @@
 \tl_replace_once:Nnn \sw@slant          { \fix@penalty }  { \xeCJK@fix@penalty }
 \cs_new_protected_nopar:Npn \xeCJK@italiccorr
   {
-    \int_compare:nNnTF \XeTeXinterchartokenstate > \c_zero
+    \int_compare:nNnTF 1 > \c_zero
       {
         \xeCJK_if_last_node:nTF { default }
           {
@@ -3783,18 +3831,26 @@
       {
         \xeCJK_copy_inter_class_toks:nnnn {##1} { Others } {##1} { NormalSpace }
         \xeCJK_copy_inter_class_toks:nnnn { Others } {##1} { NormalSpace } {##1}
-        \xeCJK_app_inter_class_toks:nnx {##1} { Others }
-          { \xeCJK_get_inter_class_toks:nn { Default } { Others } }
-        \xeCJK_pre_inter_class_toks:nnx { Others } {##1}
-          { \xeCJK_get_inter_class_toks:nn { Others } { Default } }
+        \xeCJK_get_inter_class_toks:nnN { Default } { Others } \l__xeCJK_tmp_tl
+        \xeCJK_app_inter_class_toks:nnV {##1} { Others } \l__xeCJK_tmp_tl
+        \xeCJK_get_inter_class_toks:nnN { Others } { Default } \l__xeCJK_tmp_tl
+        \xeCJK_pre_inter_class_toks:nnV { Others } {##1} \l__xeCJK_tmp_tl
         \xeCJK_if_blank_x:nT
-          { \xeCJK_get_inter_class_toks:nn { Others } { Boundary } }
+          {
+            \xeCJK_get_inter_class_toks:nnN
+              { Others } { Boundary } \l__xeCJK_tmp_tl
+            \tl_use:N \l__xeCJK_tmp_tl
+          }
           {
             \xeCJK_copy_inter_class_toks:nnnn
               { Others } { Boundary } { Default } { Boundary }
           }
         \xeCJK_if_blank_x:nT
-          { \xeCJK_get_inter_class_toks:nn { Boundary } { Others } }
+          {
+            \xeCJK_get_inter_class_toks:nnN
+              { Boundary } { Others } \l__xeCJK_tmp_tl
+            \tl_use:N \l__xeCJK_tmp_tl
+          }
           {
             \xeCJK_copy_inter_class_toks:nnnn
               { Boundary } { Others } { Boundary } { Default }
@@ -3847,7 +3903,7 @@
 \char_set_catcode_other:n { 183 }
 \cs_new_protected_nopar:Npn \__xeCJK_Default_Bxii:
   {
-    \int_compare:nNnTF \XeTeXinterchartokenstate > \c_zero
+    \int_compare:nNnTF 0 > \c_zero
       { \__xeCJK_group_begin: \makexeCJKinactive ^^b7 \__xeCJK_group_end: }
       { ^^b7 }
   }

@@ -1744,6 +1744,14 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %
 %    \begin{macrocode}
 \RequirePackage { xparse , l3keys2e }
+\xeCJK_if_package_loaded:nTF {interchar}
+  { \newintercharscheme { xeCJK } }
+  {
+    \cs_set_eq:NN \xeCJKinterchartokenstate \XeTeXinterchartokenstate
+    \cs_set_eq:NN \newxeCJKintercharclass \newXeTeXintercharclass
+    \cs_set_eq:NN \xeCJKcharclass \XeTeXcharclass
+    \cs_set_eq:NN \xeCJKinterchartoks \XeTeXinterchartoks
+  }
 %    \end{macrocode}
 %
 % \subsection{内部工具}
@@ -2196,8 +2204,8 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %
 % \begin{macro}[internal]{\makexeCJKactive, \makexeCJKinactive}
 %    \begin{macrocode}
-\NewDocumentCommand \makexeCJKactive   { } { \XeTeXinterchartokenstate = \c_one  }
-\NewDocumentCommand \makexeCJKinactive { } { \XeTeXinterchartokenstate = \c_zero }
+\NewDocumentCommand \makexeCJKactive   { } { \xeCJKinterchartokenstate = \c_one  }
+\NewDocumentCommand \makexeCJKinactive { } { \xeCJKinterchartokenstate = \c_zero }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2224,7 +2232,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
     \int_if_exist:cTF { \@@_class_csname:n {#1} }
       { \@@_error:nx { class-already-defined } {#1} }
       {
-        \exp_args:Nc \newXeTeXintercharclass { \@@_class_csname:n {#1} }
+        \exp_args:Nc \newxeCJKintercharclass { \@@_class_csname:n {#1} }
         \clist_new:c { g_@@_#1_range_clist }
         \seq_gput_right:Nn \g_@@_class_seq {#1}
         \seq_gput_right:Nv \g_@@_new_class_seq { \@@_class_csname:n {#1} }
@@ -2751,14 +2759,27 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 % \changes{v3.1.1}{2012/12/05}{在文档中设置字符类别时不重复设置 \tn{catcode}。}
 % 设置字符类别，|#1| 和 |#2| 为字符类别起止的 |Unicode|，|#3| 为类别名称对应编号。
 %    \begin{macrocode}
-\cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
+\xeCJK_if_package_loaded:nTF { interchar }
   {
-    \@@_check_num_range:nnNN {#1} {#2} \l_@@_begin_int \l_@@_end_int
-    \int_set:Nn \l_@@_tmp_int {#3}
-    \xeCJK_int_until_do:nn { \l_@@_begin_int > \l_@@_end_int }
+    \cs_generate_variant:Nn \interchar_class:nnn { nVx }
+    \cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
       {
-        \XeTeXcharclass \l_@@_begin_int = \l_@@_tmp_int
-        \int_incr:N \l_@@_begin_int
+        \@@_check_num_range:nnNN {#1} {#2} \l_@@_begin_int \l_@@_end_int
+        \int_set:Nn \l_@@_tmp_int {#3}
+        \interchar_class:nVx { xeCJK } \l_@@_tmp_int
+            { \int_use:N \l_@@_begin_int - \int_use:N \l_@@_end_int }
+      }
+  }
+  {
+    \cs_new_protected_nopar:Npn \xeCJK_set_char_class:nnn #1#2#3
+      {
+        \@@_check_num_range:nnNN {#1} {#2} \l_@@_begin_int \l_@@_end_int
+        \int_set:Nn \l_@@_tmp_int {#3}
+        \xeCJK_int_until_do:nn { \l_@@_begin_int > \l_@@_end_int }
+          {
+            \xeCJKcharclass \l_@@_begin_int = \l_@@_tmp_int
+            \int_incr:N \l_@@_begin_int
+          }
       }
   }
 %    \end{macrocode}
@@ -2773,7 +2794,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
   {
     \int_set:Nn \l_@@_tmp_int { \xeCJK_class_num:n {#2} }
     \clist_map_inline:cn { c_@@_#1_chars_clist }
-      { \XeTeXcharclass ##1 = \l_@@_tmp_int }
+      { \xeCJKcharclass ##1 = \l_@@_tmp_int }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -2784,7 +2805,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 \NewDocumentCommand \normalspacedchars { m }
   {
     \tl_map_inline:nn {#1}
-      { \XeTeXcharclass `##1 = \xeCJK_class_num:n { NormalSpace } }
+      { \xeCJKcharclass `##1 = \xeCJK_class_num:n { NormalSpace } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -2826,16 +2847,30 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 % 在相邻类别之间插入内容。
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK_inter_class_toks:nnn #1#2#3
-  { \XeTeXinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} = {#3} }
-\cs_generate_variant:Nn \xeCJK_inter_class_toks:nnn { nnc , nnx }
+  { \xeCJKinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} = {#3} }
+\cs_generate_variant:Nn \xeCJK_inter_class_toks:nnn { nnc , nnx, nnV }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[internal]{\xeCJK_get_inter_class_toks:nn}
+% \begin{macro}[internal]{\xeCJK_get_inter_class_toks:nnN}
 % 取出相邻类别之间的内容。
 %    \begin{macrocode}
-\cs_new_nopar:Npn \xeCJK_get_inter_class_toks:nn #1#2
-  { \tex_the:D \XeTeXinterchartoks \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} }
+\xeCJK_if_package_loaded:nTF { interchar }
+  {
+    \cs_generate_variant:Nn \interchar_get_toks:nnnN { nxx }
+    \cs_new_protected_nopar:Npn \xeCJK_get_inter_class_toks:nnN #1#2#3
+      {
+        \interchar_get_toks:nxxN {xeCJK} {\xeCJK_class_num:n {#1}}
+                                 {\xeCJK_class_num:n {#2}} #3
+      }
+  }
+  {
+    \cs_new_protected_nopar:Npn \xeCJK_get_inter_class_toks:nnN #1#2#3
+      {
+        \tl_set:No #3 { \tex_the:D \XeTeXinterchartoks
+                        \xeCJK_class_num:n {#1} ~ \xeCJK_class_num:n {#2} }
+      }
+  }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2852,10 +2887,11 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK_pre_inter_class_toks:nnn #1#2#3
   {
+    \xeCJK_get_inter_class_toks:nnN {#1} {#2} \l_@@_tmp_tl
     \xeCJK_inter_class_toks:nnx {#1} {#2}
-      { \exp_not:n {#3} \xeCJK_get_inter_class_toks:nn {#1} {#2} }
+      { \exp_not:n {#3} \exp_not:V \l_@@_tmp_tl }
   }
-\cs_generate_variant:Nn \xeCJK_pre_inter_class_toks:nnn { nnx }
+\cs_generate_variant:Nn \xeCJK_pre_inter_class_toks:nnn { nnx, nnV }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2864,10 +2900,11 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK_app_inter_class_toks:nnn #1#2#3
   {
+    \xeCJK_get_inter_class_toks:nnN {#1} {#2} \l_@@_tmp_tl
     \xeCJK_inter_class_toks:nnx {#1} {#2}
-      { \xeCJK_get_inter_class_toks:nn {#1} {#2} \exp_not:n {#3} }
+      { \exp_not:V \l_@@_tmp_tl \exp_not:n {#3} }
   }
-\cs_generate_variant:Nn \xeCJK_app_inter_class_toks:nnn { nnc , nnx }
+\cs_generate_variant:Nn \xeCJK_app_inter_class_toks:nnn { nnc , nnx, nnV }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2876,9 +2913,9 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK_copy_inter_class_toks:nnnn #1#2#3#4
   {
-    \tl_set:Nx \l_@@_tmp_tl { \xeCJK_get_inter_class_toks:nn {#3} {#4} }
+    \xeCJK_get_inter_class_toks:nnN {#3} {#4} \l_@@_tmp_tl
     \tl_if_empty:NF \l_@@_tmp_tl
-      { \xeCJK_inter_class_toks:nnx {#1} {#2} { \exp_not:V \l_@@_tmp_tl } }
+      { \xeCJK_inter_class_toks:nnx {#1} {#2} { \exp_not:V \l__xeCJK_tmp_tl } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -2888,11 +2925,11 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK_replace_inter_class_toks:nnnn #1#2#3#4
   {
-    \tl_set:Nx \l_@@_tmp_tl { \xeCJK_get_inter_class_toks:nn {#1} {#2} }
+    \xeCJK_get_inter_class_toks:nnN {#3} {#4} \l__xeCJK_tmp_tl
     \tl_if_empty:NF \l_@@_tmp_tl
       {
         \tl_replace_all:Nnn \l_@@_tmp_tl {#3} {#4}
-        \xeCJK_inter_class_toks:nnx {#1} {#2} { \exp_not:V \l_@@_tmp_tl }
+        \xeCJK_inter_class_toks:nnx {#1} {#2} { \exp_not:V \l__xeCJK_tmp_tl }
       }
   }
 %    \end{macrocode}
@@ -6634,7 +6671,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
   {
     \int_set:Nn \l_@@_tmp_int { \xeCJK_class_num:n {#1} }
     \clist_map_inline:cn { c_@@_#1_chars_clist }
-      { \XeTeXcharclass ##1 = \l_@@_tmp_int }
+      { \xeCJKcharclass ##1 = \l_@@_tmp_int }
   }
 \bool_new:N \l_@@_verb_addon_bool
 \cs_new_eq:NN \CJKfixedspacing \xeCJKVerbAddon
@@ -7332,7 +7369,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \xeCJK@italiccorr
   {
-    \int_compare:nNnTF \XeTeXinterchartokenstate > \c_zero
+    \int_compare:nNnTF 1 > \c_zero
       {
         \xeCJK_if_last_node:nTF { default }
           {
@@ -7402,18 +7439,26 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
       {
         \xeCJK_copy_inter_class_toks:nnnn {##1} { Others } {##1} { NormalSpace }
         \xeCJK_copy_inter_class_toks:nnnn { Others } {##1} { NormalSpace } {##1}
-        \xeCJK_app_inter_class_toks:nnx {##1} { Others }
-          { \xeCJK_get_inter_class_toks:nn { Default } { Others } }
-        \xeCJK_pre_inter_class_toks:nnx { Others } {##1}
-          { \xeCJK_get_inter_class_toks:nn { Others } { Default } }
+        \xeCJK_get_inter_class_toks:nnN { Default } { Others } \l_@@_tmp_tl
+        \xeCJK_app_inter_class_toks:nnV {##1} { Others } \l_@@_tmp_tl
+        \xeCJK_get_inter_class_toks:nnN { Others } { Default } \l_@@_tmp_tl
+        \xeCJK_pre_inter_class_toks:nnV { Others } {##1} \l_@@_tmp_tl
         \xeCJK_if_blank_x:nT
-          { \xeCJK_get_inter_class_toks:nn { Others } { Boundary } }
+          {
+            \xeCJK_get_inter_class_toks:nnN
+              { Others } { Boundary } \l_@@_tmp_tl
+            \tl_use:N \l_@@_tmp_tl
+          }
           {
             \xeCJK_copy_inter_class_toks:nnnn
               { Others } { Boundary } { Default } { Boundary }
           }
         \xeCJK_if_blank_x:nT
-          { \xeCJK_get_inter_class_toks:nn { Boundary } { Others } }
+          {
+            \xeCJK_get_inter_class_toks:nnN
+              { Boundary } { Others } \l_@@_tmp_tl
+            \tl_use:N \l_@@_tmp_tl
+          }
           {
             \xeCJK_copy_inter_class_toks:nnnn
               { Boundary } { Others } { Boundary } { Default }
@@ -7510,7 +7555,7 @@ $URL: https://ctex-kit.googlecode.com/svn/trunk/xeCJK/xeCJK.dtx $
 \char_set_catcode_other:n { 183 }
 \cs_new_protected_nopar:Npn \@@_Default_Bxii:
   {
-    \int_compare:nNnTF \XeTeXinterchartokenstate > \c_zero
+    \int_compare:nNnTF 0 > \c_zero
       { \@@_group_begin: \makexeCJKinactive ^^b7 \@@_group_end: }
       { ^^b7 }
   }
