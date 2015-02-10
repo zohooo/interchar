@@ -77,7 +77,6 @@
 
 \tl_new:N \g_interchar_current_scheme_tl
 \tl_gset:Nn \g_interchar_current_scheme_tl {default}
-\tl_new:N \l__interchar_scheme_name_tl
 
 \NewDocumentCommand \newintercharscheme { m }
   {
@@ -91,90 +90,7 @@
     \clist_new:c { g_interchar_#1_chars_3_clist }
     \prop_new:c { g_interchar_#1_toks_prop }
     % Used for migrating from XeTeX's primitive commands
-    \cs_new_protected_nopar:cpn { #1interchartokenstate }
-      {
-        \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_state_auxi:w
-      }
-    \cs_new_protected_nopar:cpn { new#1intercharclass } ##1
-      {
-        \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \interchar_newclass:nn {#1} {##1}
-      }
-    \cs_new_protected_nopar:cpn { #1charclass }
-      {
-        \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_class_auxi:w
-      }
-    \cs_new_protected_nopar:cpn { #1interchartoks }
-      {
-        \tl_set:Nx \l__interchar_scheme_name_tl {#1}
-        \__interchar_toks_auxi:w
-      }
-  }
-
-% Commands for scanning number or toks arguments
-\cs_new_nopar:Npn \__interchar_scan_number:N #1
-  {
-    \tex_afterassignment:D #1\tex_count:D 255~
-  }
-\cs_new_nopar:Npn \__interchar_scan_number_x:N #1
-  {
-    \tex_afterassignment:D #1\tex_count:D 255=
-  }
-\cs_new_nopar:Npn \__interchar_scan_toks:N #1
-  {
-    \tex_afterassignment:D #1\tex_toks:D 0~
-  }
-
-% Scanning arguments of \FOOinterchartokenstate command
-\cs_new_nopar:Npn \__interchar_state_auxi:w
-  {
-    \__interchar_scan_number:N \__interchar_state_auxii:w
-  }
-\cs_new_nopar:Npn \__interchar_state_auxii:w
-  {
-    \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \interchar_state:VV \l__interchar_scheme_name_tl \l_tmpa_int
-  }
-
-% Scanning arguments of \FOOcharclass command
-\cs_new_nopar:Npn \__interchar_class_auxi:w
-  {
-    \__interchar_scan_number_x:N \__interchar_class_auxii:w
-  }
-\cs_new_nopar:Npn \__interchar_class_auxii:w
-  {
-    \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_number:N \__interchar_class_auxiii:w
-  }
-\cs_new_nopar:Npn \__interchar_class_auxiii:w
-  {
-    \int_set:Nn \l_tmpb_int {\tex_the:D \tex_count:D 255}
-    \interchar_class:VVV
-        \l__interchar_scheme_name_tl \l_tmpb_int \l_tmpa_int
-  }
-
-% Scanning arguments of \FOOinterchartoks command
-\cs_new_nopar:Npn \__interchar_toks_auxi:w
-  {
-    \__interchar_scan_number_x:N \__interchar_toks_auxii:w
-  }
-\cs_new_nopar:Npn \__interchar_toks_auxii:w
-  {
-    \int_set:Nn \l_tmpa_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_number_x:N \__interchar_toks_auxiii:w
-  }
-\cs_new_nopar:Npn \__interchar_toks_auxiii:w
-  {
-    \int_set:Nn \l_tmpb_int {\tex_the:D \tex_count:D 255}
-    \__interchar_scan_toks:N \__interchar_toks_auxiv:w
-  }
-\cs_new_nopar:Npn \__interchar_toks_auxiv:w
-  {
-    \tl_set:No \l_tmpa_tl {\tex_the:D \tex_toks:D 0}
-    \interchar_toks:VVVV
-      \l__interchar_scheme_name_tl \l_tmpa_int \l_tmpb_int \l_tmpa_tl
+    \interchar@migration { #1 }
   }
 
 % High level \intercharstate command
@@ -450,3 +366,89 @@
 \xetex_intercharstate:D = 1
 
 \ExplSyntaxOff
+
+% We need to call LaTeX3 functions
+\catcode `\_ = 11 \catcode `\: = 11
+
+% From now on, we use \newcommand for commands, \def for variables
+
+% First we define some variables
+\def\interchar@scheme@name@tl{}
+\def\interchar@tmpa@int{}
+\def\interchar@tmpb@int{}
+\def\interchar@tmpa@tl{}
+
+% Used for migrating from XeTeX's primitive commands
+% #1: scheme name
+\newcommand\interchar@migration[1]{%
+  \expandafter\newcommand\csname #1interchartokenstate\endcsname{%
+    \def\interchar@scheme@name@tl{#1}%
+    \interchar@state@auxi
+  }%
+  \expandafter\newcommand\csname new#1intercharclass\endcsname[1]{%
+    \interchar_newclass:nn {#1} {##1}%
+  }%
+  \expandafter\newcommand\csname #1charclass\endcsname{%
+    \def\interchar@scheme@name@tl{#1}%
+    \interchar@class@auxi
+  }%
+  \expandafter\newcommand\csname #1interchartoks\endcsname{%
+    \def\interchar@scheme@name@tl{#1}%
+    \interchar@toks@auxi
+  }%
+}
+
+% Commands for scanning number or toks arguments
+\newcommand\interchar@scan@number[1]{%
+  \afterassignment#1\count255 %
+}
+\newcommand\interchar@scan@number@x[1]{%
+  \afterassignment#1\count255=%
+}
+\newcommand\interchar@scan@toks[1]{%
+  \afterassignment#1\toks0 %
+}
+
+% Scanning arguments of \FOOinterchartokenstate command
+\newcommand\interchar@state@auxi{%
+  \interchar@scan@number \interchar@state@auxii
+}
+\newcommand\interchar@state@auxii{%
+  \edef\interchar@tmpa@int{\the\count255}%
+  \interchar_state:VV \interchar@scheme@name@tl \interchar@tmpa@int
+}
+
+% Scanning arguments of \FOOcharclass command
+\newcommand\interchar@class@auxi{%
+  \interchar@scan@number@x \interchar@class@auxii
+}
+\newcommand\interchar@class@auxii{%
+  \edef\interchar@tmpa@int{\the\count255}%
+  \interchar@scan@number \interchar@class@auxiii
+}
+\newcommand\interchar@class@auxiii{%
+  \edef\interchar@tmpb@int{\the\count255}%
+  \interchar_class:VVV \interchar@scheme@name@tl
+          \interchar@tmpb@int \interchar@tmpa@int
+}
+
+% Scanning arguments of \FOOinterchartoks command
+\newcommand\interchar@toks@auxi{%
+  \interchar@scan@number@x \interchar@toks@auxii
+}
+\newcommand\interchar@toks@auxii{%
+  \edef\interchar@tmpa@int{\the\count255}%
+  \interchar@scan@number@x \interchar@toks@auxiii
+}
+\newcommand\interchar@toks@auxiii{%
+  \edef\interchar@tmpb@int{\the\count255}%
+  \interchar@scan@toks \interchar@toks@auxiv
+}
+\newcommand\interchar@toks@auxiv{%
+  \edef\interchar@tmpa@tl{\the\toks0}%
+  \interchar_toks:VVVV \interchar@scheme@name@tl
+          \interchar@tmpa@int \interchar@tmpb@int \interchar@tmpa@tl
+}
+
+% Recover catcode changes
+\catcode `\_ = 8 \catcode `\: = 12
