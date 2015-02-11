@@ -21,7 +21,6 @@
 \cs_generate_variant:Nn \prop_get:NnN { cx }
 \cs_generate_variant:Nn \prop_put:Nnn { cx }
 \cs_generate_variant:Nn \tl_if_eq:nnT { Vo }
-\cs_generate_variant:Nn \tl_if_eq:nnTF { V }
 
 % Renaming some primitive commands of XeTeX
 \cs_new_eq:NN \xetex_intercharstate:D \XeTeXinterchartokenstate
@@ -152,10 +151,15 @@
   }
 \cs_generate_variant:Nn \__interchar_clear_toks:n { V }
 
-% #1: scheme name
+% High level \getintercharstate command
+% #1: scheme name; result: state code
+\DeclareExpandableDocumentCommand \getintercharstate { m }
+  {
+    \interchar_get_state:n {#1}
+  }
 \cs_new_nopar:Npn \interchar_get_state:n #1
   {
-    \tl_if_eq:VnTF \g_interchar_current_scheme_tl { #1 } { 1 } { 0 }
+    \str_if_eq:VnTF \g_interchar_current_scheme_tl { #1 } { 1 } { 0 }
   }
 
 % High level \intercharnewclass command
