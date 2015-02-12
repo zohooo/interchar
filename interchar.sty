@@ -152,11 +152,17 @@
 \cs_generate_variant:Nn \__interchar_clear_toks:n { V }
 
 % High level \getintercharstate command
-% #1: scheme name; result: state code
-\DeclareExpandableDocumentCommand \getintercharstate { m }
+% #1: scheme name; #2 result control sequence
+\DeclareDocumentCommand \getintercharstate { O{default} m }
   {
-    \interchar_get_state:n {#1}
+    \interchar_get_state:nN {#1} {#2}
   }
+\cs_new_protected_nopar:Npn \interchar_get_state:nN #1#2
+  {
+    \tl_set:Nx #2 { \interchar_get_state:n {#1} }
+  }
+
+% #1: scheme name. This function is fully expandable.
 \cs_new_nopar:Npn \interchar_get_state:n #1
   {
     \str_if_eq:VnTF \g_interchar_current_scheme_tl { #1 } { 1 } { 0 }
