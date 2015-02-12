@@ -400,22 +400,14 @@
 
 % Used for migrating from XeTeX's primitive commands
 
-% We want to make the following usages work for \FOOinterchartokenstate:
-% - \FOOinterchartokenstate = 1
-% - \the\FOOinterchartokenstate
-% - \ifnum \the\FOOinterchartokenstate > 0 doA \else doB \fi
-% The following trick is based on egreg's answer to the question
-% See http://tex.stackexchange.com/a/227298/8956
-\newtoks\interchar@get@toks
-\interchar@get@toks = {\interchar@gobble}
-\newcommand\interchar@gobble[6]{\interchar_get_state:n{#5}}
-
 % #1: scheme name
 \newcommand\interchar@migration[1]{%
   \expandafter\newcommand\csname #1interchartokenstate\endcsname{%
-    \interchar@get@toks = {\interchar@gobble}%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@state@auxi
+  }%
+  \expandafter\newcommand\csname get#1interchartokenstate\endcsname{%
+    \interchar_get_state:n{#1}%
   }%
   \expandafter\newcommand\csname new#1intercharclass\endcsname[1]{%
     \interchar_newclass:nn {#1} {##1}%
