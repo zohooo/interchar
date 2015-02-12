@@ -398,6 +398,9 @@
 \def\interchar@tmpb@int{}
 \def\interchar@tmpa@tl{}
 
+% Switch between getting and setting values
+\newif\ifinterchar@get
+
 % Used for migrating from XeTeX's primitive commands
 
 % #1: scheme name
@@ -418,6 +421,11 @@
   }%
   \expandafter\newcommand\csname #1interchartoks\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
+    \interchar@toks@auxi
+  }%
+  \expandafter\newcommand\csname get#1interchartoks\endcsname{%
+    \def\interchar@scheme@name@tl{#1}%
+    \interchar@gettrue
     \interchar@toks@auxi
   }%
 }
@@ -456,7 +464,7 @@
           \interchar@tmpb@int \interchar@tmpa@int
 }
 
-% Scanning arguments of \FOOinterchartoks command
+% Scanning arguments of \FOOinterchartoks and \getFOOinterchartoks command
 \newcommand\interchar@toks@auxi{%
   \interchar@scan@number@x \interchar@toks@auxii
 }
@@ -466,7 +474,13 @@
 }
 \newcommand\interchar@toks@auxiii{%
   \edef\interchar@tmpb@int{\the\count255}%
-  \interchar@scan@toks \interchar@toks@auxiv
+  \ifinterchar@get
+    \interchar@getfalse
+    \interchar_get_toks:VVV \interchar@scheme@name@tl
+        \interchar@tmpa@int \interchar@tmpb@int
+  \else
+    \interchar@scan@toks \interchar@toks@auxiv
+  \fi
 }
 \newcommand\interchar@toks@auxiv{%
   \edef\interchar@tmpa@tl{\the\toks0}%
