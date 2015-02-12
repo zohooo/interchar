@@ -365,15 +365,11 @@
   }
 \cs_generate_variant:Nn \interchar_toks:nnnn { VVVV }
 
-% #1: scheme name; #2 and #3: class numbers
-% This function is exhaustively expandable
-\cs_new_nopar:Npn \interchar_get_toks:nnn #1#2#3
-  {
-    \prop_get:cx { g_interchar_#1_toks_prop } { #2 \c_space_tl #3 }
-  }
-\cs_generate_variant:Nn \interchar_get_toks:nnn { VVV }
-
 % #1: scheme name; #2 and #3: class numbers; #4: result control sequence
+\DeclareDocumentCommand \getinterchartoks { O{default} m m m }
+  {
+    \interchar_get_toks:nnnN {#1} {#2} {#3} {#4}
+  }
 \cs_new_protected_nopar:Npn \interchar_get_toks:nnnN #1#2#3#4
   {
     \int_set:Nn \l_tmpa_int {#2}
@@ -382,6 +378,14 @@
         { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int } #4
     \quark_if_no_value:NT #4 { \tl_clear:N #4 }
   }
+
+% #1: scheme name; #2 and #3: class numbers
+% This function is exhaustively expandable
+\cs_new_nopar:Npn \interchar_get_toks:nnn #1#2#3
+  {
+    \prop_get:cx { g_interchar_#1_toks_prop } { #2 \c_space_tl #3 }
+  }
+\cs_generate_variant:Nn \interchar_get_toks:nnn { VVV }
 
 \xetex_intercharstate:D = 1
 
