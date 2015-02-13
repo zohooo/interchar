@@ -219,6 +219,54 @@
   }
 \cs_generate_variant:Nn \interchar_class:nnn { VVV }
 
+% #1: scheme name; #2: char code
+\cs_new_nopar:Npn \interchar_get_class:nn #1#2
+  {
+    \__interchar_get_class_aux:vNnn { g_interchar_#1_classes_clist }
+        \__interchar_class_find_char:nnn {#1} {#2}
+  }
+\cs_new_nopar:Npn \__interchar_get_class_aux:nNnn #1#2#3#4
+  {
+    \__interchar_get_class_loop:Nnnw #2 {#3} {#4}
+         #1 , \q_recursion_tail , \q_recursion_stop
+  }
+\cs_generate_variant:Nn \__interchar_get_class_aux:nNnn { v }
+\cs_new_nopar:Npn \__interchar_get_class_loop:Nnnw #1#2#3#4 ,
+  {
+    \quark_if_recursion_tail_stop:n {#4}
+    #1 {#2} {#4} {#3}
+    \__interchar_get_class_loop:Nnnw #1 {#2} {#3}
+  }
+
+% #1: scheme name; #2: class number; #3: char code
+\cs_new_nopar:Npn \__interchar_class_find_char:nnn #1#2#3
+  {
+    \__interchar_class_find_char_aux:vnn {g_interchar_#1_chars_#2_clist} {#2} {#3}
+  }
+\cs_new_nopar:Npn \__interchar_class_find_char_aux:nnn #1#2#3
+  {
+    \__interchar_class_find_char_loop:nnw {#2} {#3}
+         #1 , \q_recursion_tail , \q_recursion_stop
+  }
+\cs_generate_variant:Nn \__interchar_class_find_char_aux:nnn { v }
+\cs_new_nopar:Npn \__interchar_class_find_char_loop:nnw #1#2#3 ,
+  {
+    \quark_if_recursion_tail_stop:n {#3}
+    \__interchar_class_split_range:nNN {#3}
+        \l__interchar_a_tl \l__interchar_b_tl
+    \int_compare:nT { "\l__interchar_a_tl <= #2 }
+      {
+        \int_compare:nTF { #2 <= "\l__interchar_b_tl}
+          {
+            #1 % found the char in class #1, stop two level loops
+            \use_i_delimit_by_q_recursion_stop:nw
+                { \use_none_delimit_by_q_recursion_stop:w }
+          }
+          { \use_none_delimit_by_q_recursion_stop:w }
+      }
+    \__interchar_class_find_char_loop:nnw {#1} {#2}
+  }
+
 % #1: scheme name; #2: class number; #3 char range
 \cs_new_protected_nopar:Npn \__interchar_class_insert_char:nnn #1#2#3
   {
@@ -270,7 +318,6 @@
                        \l_tmpa_clist \l_tmpb_clist
   }
 
-% High level \intercharclass command
 % #1: scheme name; #2: class number; #3: char range
 \cs_new_protected_nopar:Npn \__interchar_class_delete_char:nnn #1#2#3
   {
