@@ -220,6 +220,7 @@
 \cs_generate_variant:Nn \interchar_class:nnn { VVV }
 
 % #1: scheme name; #2: char code
+% This function is fully expandable
 \cs_new_nopar:Npn \interchar_get_class:nn #1#2
   {
     \__interchar_get_class_aux:vNnn { g_interchar_#1_classes_clist }
@@ -252,20 +253,37 @@
 \cs_new_nopar:Npn \__interchar_class_find_char_loop:nnw #1#2#3 ,
   {
     \quark_if_recursion_tail_stop:n {#3}
-    \__interchar_class_split_range:nNN {#3}
-        \l__interchar_a_tl \l__interchar_b_tl
-    \int_compare:nT { "\l__interchar_a_tl <= #2 }
+    \int_case:nn { \__interchar_class_compare_char:nn {#2} {#3} }
       {
-        \int_compare:nTF { #2 <= "\l__interchar_b_tl}
-          {
-            #1 % found the char in class #1, stop two level loops
-            \use_i_delimit_by_q_recursion_stop:nw
-                { \use_none_delimit_by_q_recursion_stop:w }
-          }
-          { \use_none_delimit_by_q_recursion_stop:w }
+        { -1 } { \use_none_delimit_by_q_recursion_stop:w }
+        { 0 } { #1 % found the char in class #1, stop two level loops
+          \use_i_delimit_by_q_recursion_stop:nw
+              { \use_none_delimit_by_q_recursion_stop:w }
+        }
       }
     \__interchar_class_find_char_loop:nnw {#1} {#2}
   }
+
+% #1: char code; #2 char code or char range in Hex form
+% result: -1 if #1 before #2; 1 if #1 after #2; 0 otherwise.
+\cs_new_nopar:Npn \__interchar_class_compare_char:nn #1#2
+  {
+    \__interchar_class_compare_char_aux:www #1 - #2 - - \q_stop
+  }
+\cs_new_nopar:Npn \__interchar_class_compare_char_aux:www #1 - #2 - #3 -
+  {
+    \tl_if_empty:nTF { #3 }
+      {
+        \int_compare:nTF { #1 = "#2 }
+          { 0 } { \int_compare:nTF { #1 < "#2 } { -1 } { 1 } }
+      }
+      {
+        \int_compare:nTF { "#2 <= #1 <= "#3 }
+          { 0 } { \int_compare:nTF { #1 < "#2 } { -1 } { 1 } }
+      }
+    \__interchar_class_compare_char_stop:w
+  }
+\cs_new_nopar:Npn \__interchar_class_compare_char_stop:w #1 \q_stop {}
 
 % #1: scheme name; #2: class number; #3 char range
 \cs_new_protected_nopar:Npn \__interchar_class_insert_char:nnn #1#2#3
