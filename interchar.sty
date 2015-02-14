@@ -17,8 +17,8 @@
 % Generate variants for some functions
 \cs_generate_variant:Nn \clist_concat:NNN { c }
 \cs_generate_variant:Nn \int_to_hexadecimal:n { V }
-\cs_generate_variant:Nn \prop_get:cn { cx }
 \cs_generate_variant:Nn \prop_get:NnN { cx }
+\cs_generate_variant:Nn \prop_item:cn { cx }
 \cs_generate_variant:Nn \prop_put:Nnn { cx }
 \cs_generate_variant:Nn \tl_if_eq:nnT { Vo }
 
@@ -465,11 +465,13 @@
 
 % #1: scheme name; #2 and #3: class numbers
 % This function is exhaustively expandable
+% If #2 or #3 is a control sequence generated from \newintercharclass,
+% use the following function variants instead.
 \cs_new_nopar:Npn \interchar_get_toks:nnn #1#2#3
   {
-    \prop_get:cx { g_interchar_#1_toks_prop } { #2 \c_space_tl #3 }
+    \prop_item:cn { g_interchar_#1_toks_prop } { #2 ~ #3 }
   }
-\cs_generate_variant:Nn \interchar_get_toks:nnn { VVV }
+\cs_generate_variant:Nn \interchar_get_toks:nnn { nVn, nnV, nVV, VVV }
 
 \xetex_intercharstate:D = 1
 
