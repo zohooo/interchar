@@ -219,6 +219,18 @@
   }
 \cs_generate_variant:Nn \interchar_class:nnn { VVV }
 
+% High level \getintercharclass command
+% #1: scheme name; #2: char code; #3: result control sequence
+\DeclareDocumentCommand \getintercharclass { O{default} m m }
+  {
+    \interchar_get_class:nnN {#1} {#2} {#3}
+  }
+\int_new:N \l__interchar_class_find_char_int
+\cs_new_protected_nopar:Npn \interchar_get_class:nnN #1#2#3
+  {
+    \tl_set:Nx #3 { \interchar_get_class:nn {#1} {#2} }
+  }
+
 % #1: scheme name; #2: char code
 % This function is fully expandable
 \cs_new_nopar:Npn \interchar_get_class:nn #1#2
