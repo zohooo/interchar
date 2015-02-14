@@ -238,6 +238,7 @@
     \__interchar_get_class_aux:vNnn { g_interchar_#1_classes_clist }
         \__interchar_class_find_char:nnn {#1} {#2}
   }
+\cs_generate_variant:Nn \interchar_get_class:nn { VV }
 \cs_new_nopar:Npn \__interchar_get_class_aux:nNnn #1#2#3#4
   {
     \__interchar_get_class_loop:Nnnw #2 {#3} {#4}
@@ -506,6 +507,11 @@
     \def\interchar@scheme@name@tl{#1}%
     \interchar@class@auxi
   }%
+  \expandafter\newcommand\csname get#1charclass\endcsname{%
+    \def\interchar@scheme@name@tl{#1}%
+    \interchar@gettrue
+    \interchar@class@auxi
+  }%
   \expandafter\newcommand\csname #1interchartoks\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@toks@auxi
@@ -543,7 +549,12 @@
 }
 \newcommand\interchar@class@auxii{%
   \edef\interchar@tmpa@int{\the\count255}%
-  \interchar@scan@number \interchar@class@auxiii
+  \ifinterchar@get
+    \interchar@getfalse
+    \interchar_get_class:VV \interchar@scheme@name@tl \interchar@tmpa@int
+  \else
+    \interchar@scan@number \interchar@class@auxiii
+  \fi
 }
 \newcommand\interchar@class@auxiii{%
   \edef\interchar@tmpb@int{\the\count255}%
