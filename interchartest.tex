@@ -48,17 +48,20 @@ Testing \verb-\__interchar_class_split_range:nNN-
 \__interchar_class_split_range:nNN {`\A} \l_tmpa_tl \l_tmpb_tl
 \tl_if_eq:VnTF \l_tmpb_tl {`\A} {\passed}{\failed}
 
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+\vspace{1em}
+
 Testing \verb-\newintercharscheme{FOO}-
 \newintercharscheme{FOO}
 \cs_if_exist:cTF {g_interchar_FOO_chars_3_clist} {\passed}{\failed}
 
 Testing \verb-\newintercharclass[FOO]{#2}-
 \newintercharclass[FOO]{\myclassU}
+\newintercharclass[FOO]{\myclassV}
 \clist_if_in:NnTF \g_interchar_FOO_classes_clist {4} {\passed}{\failed}
-
-Testing \verb-\newFOOintercharclass #1-
-\newFOOintercharclass \myclassV
-\clist_if_in:NnTF \g_interchar_FOO_classes_clist {5} {\passed}{\failed}
 
 %\intercharclass{1}{"1234}
 %\intercharclass{2}{"FF45}
@@ -86,6 +89,35 @@ Testing \verb-\intercharclass[FOO]{#2}{#3}-
 \clist_if_in:cnTF {g_interchar_FOO_chars_3_clist} {52-53} {\passed}{\failed}
 \intercharclass[FOO]{2}{"45}
 \clist_if_in:cnTF {g_interchar_FOO_chars_3_clist} {46-47} {\passed}{\failed}
+
+Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
+\newintercharclass[FOO]{\myclassW}
+\intercharclass[FOO]{\myclassW}{`\o}
+\interchartoks[FOO]{0}{\myclassW}{\bgroup\color{blue}}
+\interchartoks[FOO]{255}{\myclassW}{\bgroup\color{blue}}
+\interchartoks[FOO]{\myclassW}{0}{\egroup}
+\interchartoks[FOO]{\myclassW}{255}{\egroup}
+\prop_get:NnN \g_interchar_FOO_toks_prop {255 6} \l_tmpa_tl
+\tl_if_eq:VnTF \l_tmpa_tl {\bgroup\color{blue}} {\passed}{\failed}
+
+\XeTeXinterchartokenstate = 0
+Testing \verb-\intercharstate[FOO]{#2}-:
+\intercharstate[FOO]{0}
+\tl_if_eq:VnTF {\XeTeXcharclass `\o} {0} {\passed}{\failed}
+\tl_if_eq:VnTF {\XeTeXinterchartoks 0 1} {\xtxHanSpace} {\passed}{\failed}
+
+\XeTeXinterchartokenstate = 1
+\intercharstate[FOO]{1}
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+
+\vspace{1em}
+
+\XeTeXinterchartokenstate = 0
+Testing \verb-\newFOOintercharclass #1-
+\newFOOintercharclass \myclassQ
+\clist_if_in:NnTF \g_interchar_FOO_classes_clist {7} {\passed}{\failed}
 
 Testing \verb-\FOOcharclass #1 = #2-
 \FOOcharclass `\c = \myclassU
@@ -115,43 +147,17 @@ Testing \verb-\FOOcharclass #1 = #2-
 \FOOcharclass `\D 0
 \clist_if_empty:cTF {g_interchar_FOO_chars_9_clist} {\passed}{\failed}
 
-Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
-\interchartoks[FOO]{\myclassU}{\myclassV}{{\color{red}zzz}}
-\prop_get:NnN \g_interchar_FOO_toks_prop {4 5} \l_tmpa_tl
-\tl_if_eq:VnTF \l_tmpa_tl {{\color{red}zzz}} {\passed}{\failed}
-
 Testing \verb-\FOOinterchartoks #1 #2 = {#3}-
-\newintercharclass[FOO]{\myclassW}
-\FOOcharclass `\o = \myclassW
-\FOOinterchartoks 0 \myclassW = {\bgroup\color{blue}}
-\FOOinterchartoks 255 \myclassW {\bgroup\color{blue}}
-\FOOinterchartoks \myclassW 0 = {\egroup}
-\FOOinterchartoks \myclassW 255 {\egroup}
-\prop_get:NnN \g_interchar_FOO_toks_prop {255 6} \l_tmpa_tl
-\tl_if_eq:VnTF \l_tmpa_tl {\bgroup\color{blue}} {\passed}{\failed}
+\FOOinterchartoks \myclassU \myclassV = {\textcolor{red}{zzz}}
+\prop_get:NnN \g_interchar_FOO_toks_prop {4 5} \l_tmpa_tl
+\tl_if_eq:VnTF \l_tmpa_tl {\textcolor{red}{zzz}} {\passed}{\failed}
 
-Testing \verb-\intercharstate[FOO]{#2}-
-\intercharstate[FOO]{1}
+Testing \verb-\FOOinterchartokenstate = #1-
+\FOOcharclass `\o = \myclassV
+\FOOinterchartokenstate = 1
 %aa\the\XeTeXinterchartoks 4 5 bb
-\tl_if_eq:VnTF {\XeTeXcharclass `\o} {6} {\passed}{\failed}
-\tl_if_eq:VnTF {\XeTeXinterchartoks 4 5} {{\color{red}zzz}} {\passed}{\failed}
-
-\XeTeXinterchartokenstate = 0
-Testing \verb-\FOOinterchartokenstate = #1-:
-\XeTeXinterchartokenstate = 1
-\FOOinterchartokenstate = 0
-\tl_if_eq:VnTF {\XeTeXcharclass `\o} {0} {\passed}{\failed}
-\tl_if_eq:VnTF {\XeTeXinterchartoks 0 1} {\xtxHanSpace} {\passed}{\failed}
-
-The quick brown fox jumps over the lazy dog.
-The quick brown fox jumps over the lazy dog.
-The quick brown fox jumps over the lazy dog.
-
-\FOOinterchartokenstate = 2
-
-The quick brown fox jumps over the lazy dog.
-The quick brown fox jumps over the lazy dog.
-The quick brown fox jumps over the lazy dog.
+\tl_if_eq:VnTF {\XeTeXcharclass `\o} {5} {\passed}{\failed}
+\tl_if_eq:VnTF {\XeTeXinterchartoks 4 5} {\textcolor{red}{zzz}} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 0
 Testing \verb-\BARinterchartokenstate = #1-:
