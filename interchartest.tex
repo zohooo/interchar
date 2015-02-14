@@ -21,7 +21,7 @@
 \ExplSyntaxOff
 \usepackage{interchar}
 
-\setlength{\parskip}{5pt plus 1pt}
+\setlength{\parskip}{2pt plus 1pt}
 \setlength{\parindent}{0pt}
 \pagestyle{empty}
 \newcommand{\unspace}{\unskip\unskip\unskip\unskip\unskip\unskip}
@@ -35,6 +35,12 @@
 \catcode `\_ = 11 \catcode `\: = 11
 
 \cs_generate_variant:Nn \tl_if_eq:nnTF {V,x}
+
+Testing \verb-\__interchar_class_compare_char:nn-
+\cs_new_eq:NN \comparechar \__interchar_class_compare_char:nn
+\tl_set:Nx\l_tmpa_tl{\comparechar{2}{A},\comparechar{10}{A},\comparechar{12}{A}.%
+\comparechar{40}{2A-2F},\comparechar{45}{2A-2F},\comparechar{50}{2A-2F}.}
+\tl_if_eq:xnTF {\tl_to_str:N \l_tmpa_tl} {-1,0,1.-1,0,1.} {\passed}{\failed}
 
 Testing \verb-\__interchar_class_split_range:nNN-
 \__interchar_class_split_range:nNN {1234-ABCD} \l_tmpa_tl \l_tmpb_tl
@@ -90,6 +96,13 @@ Testing \verb-\intercharclass[FOO]{#2}{#3}-
 \intercharclass[FOO]{2}{"45}
 \clist_if_in:cnTF {g_interchar_FOO_chars_3_clist} {46-47} {\passed}{\failed}
 
+Testing \verb-\getintercharclass[FOO]{#2}{#3}-
+\cs_new_eq:NN \getclass \interchar_get_class:nn
+\tl_set:Nx \l_tmpa_tl {\getclass{default}{"5555}\getclass{default}{"300A}\getclass{default}{"3001}}
+\tl_if_eq:xnTF {\tl_to_str:N \l_tmpa_tl} {123} {\passed}{\failed}
+\getintercharclass{"3456}{\l_tmpa_tl}
+\tl_if_eq:VnTF \l_tmpa_tl {1} {\passed}{\failed}
+
 Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
 \newintercharclass[FOO]{\myclassW}
 \intercharclass[FOO]{\myclassW}{`\o}
@@ -101,13 +114,25 @@ Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
 \tl_if_eq:VnTF \l_tmpa_tl {\bgroup\color{blue}} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 0
+Testing \verb-\getinterchartoks[FOO]{#2}{#3}{#4}-
+\interchartoks[FOO]{\myclassW}{1}{u}
+\tl_set:Nx \l_tmpa_tl {\interchar_get_toks:nVn{FOO}{\myclassW}{1}}
+\tl_if_eq:VnTF \l_tmpa_tl {u} {\passed}{\failed}
+
+\XeTeXinterchartokenstate = 0
 Testing \verb-\intercharstate[FOO]{#2}-:
 \intercharstate[FOO]{0}
 \tl_if_eq:VnTF {\XeTeXcharclass `\o} {0} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXinterchartoks 0 1} {\xtxHanSpace} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 1
-\intercharstate[FOO]{1}
+Testing \verb-\getintercharstate[FOO]{#2}-:
+\getintercharstate[FOO]{\l_tmpa_tl}
+\tl_if_eq:VnTF  \l_tmpa_tl {0} {\passed}{\failed}
+\intercharstate[FOO]{2}
+\tl_set:Nx \l_tmpa_tl {\interchar_get_state:n{FOO}}
+\tl_if_eq:xnTF {\tl_to_str:N \l_tmpa_tl} {1} {\passed}{\failed}
+
 The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
@@ -158,6 +183,10 @@ Testing \verb-\FOOinterchartokenstate = #1-
 %aa\the\XeTeXinterchartoks 4 5 bb
 \tl_if_eq:VnTF {\XeTeXcharclass `\o} {5} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXinterchartoks 4 5} {\textcolor{red}{zzz}} {\passed}{\failed}
+
+\FOOinterchartokenstate = 2
+Testing \verb-\getFOOinterchartokenstate-:
+\ifnum \getFOOinterchartokenstate = 1 \passed \else \failed \fi
 
 \XeTeXinterchartokenstate = 0
 Testing \verb-\BARinterchartokenstate = #1-:
