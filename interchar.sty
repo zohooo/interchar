@@ -33,42 +33,42 @@
 \clist_gset:Nn \g_interchar_default_classes_clist { 1, 2, 3 }
 \int_new:N  \g_interchar_default_newclass_int
 \int_gset:Nn \g_interchar_default_newclass_int { 4 }
-\clist_new:c { g_interchar_default_chars_0_clist }
-\clist_gset:cn { g_interchar_default_chars_0_clist }
+\clist_new:c { l_interchar_default_chars_0_clist }
+\clist_set:cn { l_interchar_default_chars_0_clist }
   {
     1-3000, 3003-3007, 3010-33FF, 4DB6-4DFF, 9FCD-FF07, FF0A-FF0B, FF0D, FF0F-FFFF
   }
-\clist_new:c { g_interchar_default_chars_1_clist }
-\clist_gset:cn { g_interchar_default_chars_1_clist }
+\clist_new:c { l_interchar_default_chars_1_clist }
+\clist_set:cn { l_interchar_default_chars_1_clist }
   {
     3400-4DB5, 4E00-9FCC
   }
-\clist_new:c  { g_interchar_default_chars_2_clist }
-\clist_gset:cn { g_interchar_default_chars_2_clist }
+\clist_new:c  { l_interchar_default_chars_2_clist }
+\clist_set:cn { l_interchar_default_chars_2_clist }
   {
     3008, 300A, 300C, 300E, FF08
   }
-\clist_new:c { g_interchar_default_chars_3_clist }
-\clist_gset:cn { g_interchar_default_chars_3_clist }
+\clist_new:c { l_interchar_default_chars_3_clist }
+\clist_set:cn { l_interchar_default_chars_3_clist }
   {
     3001-3002, 3009, 300B, 300D, 300F, FF09, FF0C, FF0E
   }
-\prop_new:N \g_interchar_default_toks_prop
-\prop_gput:Nnn \g_interchar_default_toks_prop {0~1} {\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {0~2} {\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {0~3} {\nobreak\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {1~0} {\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {2~0} {\nobreak\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {3~0} {\xtxHanSpace}
-\prop_gput:Nnn \g_interchar_default_toks_prop {1~1} {\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {1~2} {\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {1~3} {\nobreak\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {2~1} {\nobreak\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {2~2} {\nobreak\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {2~3} {\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {3~1} {\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {3~2} {\xtxHanGlue}
-\prop_gput:Nnn \g_interchar_default_toks_prop {3~3} {\nobreak\xtxHanGlue}
+\prop_new:N \l_interchar_default_toks_prop
+\prop_put:Nnn \l_interchar_default_toks_prop {0~1} {\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {0~2} {\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {0~3} {\nobreak\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {1~0} {\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {2~0} {\nobreak\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {3~0} {\xtxHanSpace}
+\prop_put:Nnn \l_interchar_default_toks_prop {1~1} {\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {1~2} {\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {1~3} {\nobreak\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {2~1} {\nobreak\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {2~2} {\nobreak\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {2~3} {\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {3~1} {\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {3~2} {\xtxHanGlue}
+\prop_put:Nnn \l_interchar_default_toks_prop {3~3} {\nobreak\xtxHanGlue}
 
 % Create a new interchar scheme for each package
 \msg_new:nnn { interchar } { Empty-Argument }
@@ -76,8 +76,8 @@
     The~argument~should~not~be~empty!
   }
 
-\tl_new:N \g_interchar_current_scheme_tl
-\tl_gset:Nn \g_interchar_current_scheme_tl {default}
+\tl_new:N \l_interchar_current_scheme_tl
+\tl_set:Nn \l_interchar_current_scheme_tl {default}
 
 \NewDocumentCommand \newintercharscheme { m }
   {
@@ -86,10 +86,10 @@
     \clist_gset:cn { g_interchar_#1_classes_clist } { 1, 2, 3 }
     \int_new:c { g_interchar_#1_newclass_int }
     \int_gset:cn { g_interchar_#1_newclass_int } { 4 }
-    \clist_new:c { g_interchar_#1_chars_1_clist }
-    \clist_new:c { g_interchar_#1_chars_2_clist }
-    \clist_new:c { g_interchar_#1_chars_3_clist }
-    \prop_new:c { g_interchar_#1_toks_prop }
+    \clist_new:c { l_interchar_#1_chars_1_clist }
+    \clist_new:c { l_interchar_#1_chars_2_clist }
+    \clist_new:c { l_interchar_#1_chars_3_clist }
+    \prop_new:c { l_interchar_#1_toks_prop }
     % Used for migrating from XeTeX's primitive commands
     \interchar@migration { #1 }
   }
@@ -102,7 +102,7 @@
   }
 \cs_new_protected_nopar:Npn \interchar_state:nn #1#2
   {
-    \__interchar_clear_toks:V \g_interchar_current_scheme_tl
+    \__interchar_clear_toks:V \l_interchar_current_scheme_tl
     \clist_map_inline:Nn \g_interchar_default_classes_clist
         { \__interchar_apply_class:nn {default} {##1} }
     \__interchar_apply_class:nn {default} {0}
@@ -112,10 +112,10 @@
         \clist_map_inline:cn { g_interchar_#1_classes_clist }
             { \__interchar_apply_class:nn {#1} {##1} }
         \__interchar_apply_toks:n {#1}
-        % Use \tl_gset:Nx rathar than \tl_gset:Nn here
-        \tl_gset:Nx \g_interchar_current_scheme_tl {#1}
+        % Use \tl_set:Nx rathar than \tl_set:Nn here
+        \tl_set:Nx \l_interchar_current_scheme_tl {#1}
       }
-      { \tl_gset:Nn \g_interchar_current_scheme_tl {default} }
+      { \tl_set:Nn \l_interchar_current_scheme_tl {default} }
   }
 \cs_generate_variant:Nn \interchar_state:nn { VV }
 
@@ -123,7 +123,7 @@
 \cs_new_protected_nopar:Npn \__interchar_apply_class:nn #1#2
   {
     \clist_map_inline:cn
-      { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+      { l_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
       {
         \__interchar_class_split_range:nNN {##1} \l_tmpa_tl \l_tmpb_tl
         \int_set:Nn \l_tmpa_int { "\l_tmpa_tl }
@@ -139,14 +139,14 @@
 % #1: scheme name
 \cs_new_protected_nopar:Npn \__interchar_apply_toks:n #1
   {
-    \prop_map_inline:cn { g_interchar_#1_toks_prop }
+    \prop_map_inline:cn { l_interchar_#1_toks_prop }
       { \xetex_interchartoks:D ##1 = {##2} }
   }
 
 % #1: scheme name
 \cs_new_protected_nopar:Npn \__interchar_clear_toks:n #1
   {
-    \prop_map_inline:cn { g_interchar_#1_toks_prop }
+    \prop_map_inline:cn { l_interchar_#1_toks_prop }
       { \xetex_interchartoks:D ##1 = {} }
   }
 \cs_generate_variant:Nn \__interchar_clear_toks:n { V }
@@ -165,7 +165,7 @@
 % #1: scheme name. This function is fully expandable.
 \cs_new_nopar:Npn \interchar_get_state:n #1
   {
-    \str_if_eq:VnTF \g_interchar_current_scheme_tl { #1 } { 1 } { 0 }
+    \str_if_eq:VnTF \l_interchar_current_scheme_tl { #1 } { 1 } { 0 }
   }
 
 % High level \intercharnewclass command
@@ -180,7 +180,7 @@
     \int_new:N #2
     \int_set_eq:NN #2 \l_tmpa_int
     \clist_put_right:co {g_interchar_#1_classes_clist} {\int_use:N \l_tmpa_int}
-    \clist_new:c { g_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
+    \clist_new:c { l_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
     \int_incr:c { g_interchar_#1_newclass_int }
   }
 
@@ -202,7 +202,7 @@
             \clist_put_right:co { g_interchar_#1_classes_clist }
                 { \int_use:N\l_tmpa_int }
             \clist_new:c
-                { g_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
+                { l_interchar_#1_chars_ \int_use:N\l_tmpa_int _clist }
           }
         \__interchar_class_insert_char:nnn {#1} {#2} {#3}
       }
@@ -255,7 +255,7 @@
 % #1: scheme name; #2: class number; #3: char code
 \cs_new_nopar:Npn \__interchar_class_find_char:nnn #1#2#3
   {
-    \__interchar_class_find_char_aux:vnn {g_interchar_#1_chars_#2_clist} {#2} {#3}
+    \__interchar_class_find_char_aux:vnn {l_interchar_#1_chars_#2_clist} {#2} {#3}
   }
 \cs_new_nopar:Npn \__interchar_class_find_char_aux:nnn #1#2#3
   {
@@ -305,7 +305,7 @@
     \clist_clear:N \l_tmpa_clist
     % store all char ranges after #3
     \clist_set_eq:Nc
-        \l_tmpb_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+        \l_tmpb_clist { l_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
     \__interchar_class_split_range:nNN {#3} \l__interchar_a_tl \l__interchar_b_tl
     \tl_set:Nx \l_tmpa_tl { \int_to_hexadecimal:V \l__interchar_a_tl }
     \tl_set:Nx \l_tmpb_tl { \int_to_hexadecimal:V \l__interchar_b_tl }
@@ -345,7 +345,7 @@
       { \tl_set_eq:NN \l__interchar_ab_tl \l_tmpa_tl }
       { \tl_set:Nx \l__interchar_ab_tl { \l_tmpa_tl - \l_tmpb_tl } }
     \clist_put_right:NV \l_tmpa_clist \l__interchar_ab_tl
-    \clist_concat:cNN { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+    \clist_concat:cNN { l_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
                        \l_tmpa_clist \l_tmpb_clist
   }
 
@@ -356,7 +356,7 @@
     \clist_clear:N \l_tmpa_clist
     % store all char ranges after #3
     \clist_set_eq:Nc
-        \l_tmpb_clist { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+        \l_tmpb_clist { l_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
     \__interchar_class_split_range:nNN {#3} \l__interchar_a_tl \l__interchar_b_tl
     \tl_set:Nx \l_tmpa_tl { \int_to_hexadecimal:V \l__interchar_a_tl }
     \tl_set:Nx \l_tmpb_tl { \int_to_hexadecimal:V \l__interchar_b_tl }
@@ -416,7 +416,7 @@
               }
           }
       }
-    \clist_concat:cNN { g_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
+    \clist_concat:cNN { l_interchar_#1_chars_ \int_to_arabic:n{#2} _clist }
                        \l_tmpa_clist \l_tmpb_clist
   }
 
@@ -439,10 +439,10 @@
   {
     \int_set:Nn \l_tmpa_int {#2}
     \int_set:Nn \l_tmpb_int {#3}
-    \prop_put:cxn { g_interchar_#1_toks_prop }
+    \prop_put:cxn { l_interchar_#1_toks_prop }
         { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int }
         { #4 }
-    \tl_if_eq:VoT \g_interchar_current_scheme_tl { #1 }
+    \tl_if_eq:VoT \l_interchar_current_scheme_tl { #1 }
       {
         \xetex_interchartoks:D \l_tmpa_int \l_tmpb_int = { #4 }
       }
@@ -458,7 +458,7 @@
   {
     \int_set:Nn \l_tmpa_int {#2}
     \int_set:Nn \l_tmpb_int {#3}
-    \prop_get:cxN { g_interchar_#1_toks_prop }
+    \prop_get:cxN { l_interchar_#1_toks_prop }
         { \int_use:N \l_tmpa_int \c_space_tl \int_use:N \l_tmpb_int } #4
     \quark_if_no_value:NT #4 { \tl_clear:N #4 }
   }
@@ -469,7 +469,7 @@
 % use the following function variants instead.
 \cs_new_nopar:Npn \interchar_get_toks:nnn #1#2#3
   {
-    \prop_item:cn { g_interchar_#1_toks_prop } { #2 ~ #3 }
+    \prop_item:cn { l_interchar_#1_toks_prop } { #2 ~ #3 }
   }
 \cs_generate_variant:Nn \interchar_get_toks:nnn { nVn, nnV, nVV, VVV }
 
