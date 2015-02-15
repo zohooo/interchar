@@ -519,6 +519,7 @@
 
 % First we define some variables
 \def\interchar@scheme@name@tl{}
+\def\interchar@c@tl{}
 \def\interchar@tmpa@int{}
 \def\interchar@tmpb@int{}
 \def\interchar@tmpa@tl{}
@@ -530,30 +531,31 @@
 
 % #1: scheme name
 \newcommand\interchar@migration[1]{%
-  \expandafter\newcommand\csname #1interchartokenstate\endcsname{%
+  \expandafter\def\expandafter\interchar@c@tl\expandafter{\tl_upper_case:n #1}%
+  \expandafter\newcommand\csname\interchar@c@tl IntercharState\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@state@auxi
   }%
-  \expandafter\newcommand\csname get#1interchartokenstate\endcsname{%
+  \expandafter\newcommand\csname Get\interchar@c@tl IntercharState\endcsname{%
     \interchar_get_state:n{#1}%
   }%
-  \expandafter\newcommand\csname new#1intercharclass\endcsname[1]{%
+  \expandafter\newcommand\csname New\interchar@c@tl IntercharClass\endcsname[1]{%
     \interchar_newclass:nn {#1} {##1}%
   }%
-  \expandafter\newcommand\csname #1charclass\endcsname{%
+  \expandafter\newcommand\csname\interchar@c@tl IntercharClass\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@class@auxi
   }%
-  \expandafter\newcommand\csname get#1charclass\endcsname{%
+  \expandafter\newcommand\csname Get\interchar@c@tl IntercharClass\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@gettrue
     \interchar@class@auxi
   }%
-  \expandafter\newcommand\csname #1interchartoks\endcsname{%
+  \expandafter\newcommand\csname\interchar@c@tl IntercharToks\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@toks@auxi
   }%
-  \expandafter\newcommand\csname get#1interchartoks\endcsname{%
+  \expandafter\newcommand\csname Get\interchar@c@tl IntercharToks\endcsname{%
     \def\interchar@scheme@name@tl{#1}%
     \interchar@gettrue
     \interchar@toks@auxi

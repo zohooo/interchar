@@ -60,14 +60,14 @@ The quick brown fox jumps over the lazy dog.
 
 \vspace{1em}
 
-Testing \verb-\newintercharscheme{FOO}-
-\newintercharscheme{FOO}
-\cs_if_exist:cTF {l_interchar_FOO_chars_3_clist} {\passed}{\failed}
+Testing \verb-\newintercharscheme{foo}-
+\newintercharscheme{foo}
+\cs_if_exist:cTF {l_interchar_foo_chars_3_clist} {\passed}{\failed}
 
-Testing \verb-\newintercharclass[FOO]{#2}-
-\newintercharclass[FOO]{\myclassU}
-\newintercharclass[FOO]{\myclassV}
-\clist_if_in:NnTF \g_interchar_FOO_classes_clist {4} {\passed}{\failed}
+Testing \verb-\newintercharclass[foo]{#2}-
+\newintercharclass[foo]{\myclassU}
+\newintercharclass[foo]{\myclassV}
+\clist_if_in:NnTF \g_interchar_foo_classes_clist {4} {\passed}{\failed}
 
 %\intercharclass{"1234}{1}
 %\intercharclass{"FF45}{2}
@@ -77,60 +77,60 @@ Testing \verb-\newintercharclass[FOO]{#2}-
 %  "41  "46  "4B  "50  "55  "5A  "61  "66  "6B  "70  "75  "7A
 %   65   70   75   80   85   90   97  102  107  112  117  122
 % '101 '106 '113 '120 '125 '132 '141 '146 '153 '160 '165 '172
-Testing \verb-\intercharclass[FOO]{#2}{#3}-
-\intercharclass[FOO]{"4B}{9}
-\cs_if_exist:cTF {l_interchar_FOO_chars_9_clist} {\passed}{\failed}
-\intercharclass[FOO]{"4B}{0}
-\clist_if_empty:cTF {l_interchar_FOO_chars_9_clist} {\passed}{\failed}
-\intercharclass[FOO]{"5A}{1}
-\intercharclass[FOO]{"5A}{2}
-\clist_if_in:cnTF {l_interchar_FOO_chars_2_clist} {5A} {\passed}{\failed}
-\intercharclass[FOO]{"5A}{3}
-\clist_if_empty:cTF {l_interchar_FOO_chars_2_clist} {\passed}{\failed}
-\intercharclass[FOO]{"44-"47}{3}
-\clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {44-47} {\passed}{\failed}
-\intercharclass[FOO]{"50-"53}{3}
-\clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {50-53} {\passed}{\failed}
-\intercharclass[FOO]{"48-"51}{2}
-\clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {52-53} {\passed}{\failed}
-\intercharclass[FOO]{"45}{2}
-\clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {46-47} {\passed}{\failed}
+Testing \verb-\intercharclass[foo]{#2}{#3}-
+\intercharclass[foo]{"4B}{9}
+\cs_if_exist:cTF {l_interchar_foo_chars_9_clist} {\passed}{\failed}
+\intercharclass[foo]{"4B}{0}
+\clist_if_empty:cTF {l_interchar_foo_chars_9_clist} {\passed}{\failed}
+\intercharclass[foo]{"5A}{1}
+\intercharclass[foo]{"5A}{2}
+\clist_if_in:cnTF {l_interchar_foo_chars_2_clist} {5A} {\passed}{\failed}
+\intercharclass[foo]{"5A}{3}
+\clist_if_empty:cTF {l_interchar_foo_chars_2_clist} {\passed}{\failed}
+\intercharclass[foo]{"44-"47}{3}
+\clist_if_in:cnTF {l_interchar_foo_chars_3_clist} {44-47} {\passed}{\failed}
+\intercharclass[foo]{"50-"53}{3}
+\clist_if_in:cnTF {l_interchar_foo_chars_3_clist} {50-53} {\passed}{\failed}
+\intercharclass[foo]{"48-"51}{2}
+\clist_if_in:cnTF {l_interchar_foo_chars_3_clist} {52-53} {\passed}{\failed}
+\intercharclass[foo]{"45}{2}
+\clist_if_in:cnTF {l_interchar_foo_chars_3_clist} {46-47} {\passed}{\failed}
 
-Testing \verb-\getintercharclass[FOO]{#2}{#3}-
+Testing \verb-\getintercharclass[foo]{#2}{#3}-
 \cs_new_eq:NN \getclass \interchar_get_class:nn
 \tl_set:Nx \l_tmpa_tl {\getclass{default}{"5555}\getclass{default}{"300A}\getclass{default}{"3001}}
 \tl_if_eq:xnTF {\tl_to_str:N \l_tmpa_tl} {123} {\passed}{\failed}
 \getintercharclass{"3456}{\l_tmpa_tl}
 \tl_if_eq:VnTF \l_tmpa_tl {1} {\passed}{\failed}
 
-Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
-\newintercharclass[FOO]{\myclassW}
-\intercharclass[FOO]{`\o}{\myclassW}
-\interchartoks[FOO]{0}{\myclassW}{\bgroup\color{blue}}
-\interchartoks[FOO]{255}{\myclassW}{\bgroup\color{blue}}
-\interchartoks[FOO]{\myclassW}{0}{\egroup}
-\interchartoks[FOO]{\myclassW}{255}{\egroup}
-\prop_get:NnN \l_interchar_FOO_toks_prop {255 6} \l_tmpa_tl
+Testing \verb-\interchartoks[foo]{#2}{#3}{#4}-
+\newintercharclass[foo]{\myclassW}
+\intercharclass[foo]{`\o}{\myclassW}
+\interchartoks[foo]{0}{\myclassW}{\bgroup\color{blue}}
+\interchartoks[foo]{255}{\myclassW}{\bgroup\color{blue}}
+\interchartoks[foo]{\myclassW}{0}{\egroup}
+\interchartoks[foo]{\myclassW}{255}{\egroup}
+\prop_get:NnN \l_interchar_foo_toks_prop {255 6} \l_tmpa_tl
 \tl_if_eq:VnTF \l_tmpa_tl {\bgroup\color{blue}} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 0
-Testing \verb-\getinterchartoks[FOO]{#2}{#3}{#4}-
-\interchartoks[FOO]{\myclassW}{1}{u}
-\tl_set:Nx \l_tmpa_tl {\interchar_get_toks:nVn{FOO}{\myclassW}{1}}
+Testing \verb-\getinterchartoks[foo]{#2}{#3}{#4}-
+\interchartoks[foo]{\myclassW}{1}{u}
+\tl_set:Nx \l_tmpa_tl {\interchar_get_toks:nVn{foo}{\myclassW}{1}}
 \tl_if_eq:VnTF \l_tmpa_tl {u} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 0
-Testing \verb-\intercharstate[FOO]{#2}-:
-\intercharstate[FOO]{0}
+Testing \verb-\intercharstate[foo]{#2}-:
+\intercharstate[foo]{0}
 \tl_if_eq:VnTF {\XeTeXcharclass `\o} {0} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXinterchartoks 0 1} {\xtxHanSpace} {\passed}{\failed}
 
 \XeTeXinterchartokenstate = 1
-Testing \verb-\getintercharstate[FOO]{#2}-:
-\getintercharstate[FOO]{\l_tmpa_tl}
+Testing \verb-\getintercharstate[foo]{#2}-:
+\getintercharstate[foo]{\l_tmpa_tl}
 \tl_if_eq:VnTF  \l_tmpa_tl {0} {\passed}{\failed}
-\intercharstate[FOO]{2}
-\tl_set:Nx \l_tmpa_tl {\interchar_get_state:n{FOO}}
+\intercharstate[foo]{2}
+\tl_set:Nx \l_tmpa_tl {\interchar_get_state:n{foo}}
 \tl_if_eq:xnTF {\tl_to_str:N \l_tmpa_tl} {1} {\passed}{\failed}
 
 The quick brown fox jumps over the lazy dog.
@@ -140,72 +140,72 @@ The quick brown fox jumps over the lazy dog.
 \vspace{1em}
 
 \XeTeXinterchartokenstate = 0
-Testing \verb-\newFOOintercharclass #1-
-\newFOOintercharclass \myclassQ
-\clist_if_in:NnTF \g_interchar_FOO_classes_clist {7} {\passed}{\failed}
+Testing \verb-\NewFooIntercharClass #1-
+\NewFooIntercharClass \myclassQ
+\clist_if_in:NnTF \g_interchar_foo_classes_clist {7} {\passed}{\failed}
 
-Testing \verb-\FOOcharclass #1 = #2-
-\FOOcharclass `\c = \myclassU
-\FOOcharclass `\b = \myclassU
-\FOOcharclass `\a = \myclassU
-\clist_if_in:cnTF {l_interchar_FOO_chars_4_clist} {61-63} {\passed}{\failed}
-\FOOcharclass `\y \myclassV
-\FOOcharclass `\z \myclassV
-\clist_if_in:cnTF {l_interchar_FOO_chars_5_clist} {79-7A} {\passed}{\failed}
-\FOOcharclass "43 9
-\FOOcharclass "45 9
-\FOOcharclass "44 9
-\clist_if_in:cnTF {l_interchar_FOO_chars_9_clist} {43-45} {\passed}{\failed}
-\FOOcharclass `\L 9
-\FOOcharclass `\M 9
-\FOOcharclass `\O 9
-\FOOcharclass `\N 9
-\clist_if_in:cnTF {l_interchar_FOO_chars_9_clist} {4C-4F} {\passed}{\failed}
-\FOOcharclass `\N 0
-\clist_if_in:cnTF {l_interchar_FOO_chars_9_clist} {4C-4D} {\passed}{\failed}
-\FOOcharclass `\L 0
-\FOOcharclass `\M 0
-\FOOcharclass `\N 0
-\FOOcharclass `\O 0
-\FOOcharclass `\E 0
-\FOOcharclass `\C 0
-\FOOcharclass `\D 0
-\clist_if_empty:cTF {l_interchar_FOO_chars_9_clist} {\passed}{\failed}
+Testing \verb-\FooIntercharClass #1 = #2-
+\FooIntercharClass `\c = \myclassU
+\FooIntercharClass `\b = \myclassU
+\FooIntercharClass `\a = \myclassU
+\clist_if_in:cnTF {l_interchar_foo_chars_4_clist} {61-63} {\passed}{\failed}
+\FooIntercharClass `\y \myclassV
+\FooIntercharClass `\z \myclassV
+\clist_if_in:cnTF {l_interchar_foo_chars_5_clist} {79-7A} {\passed}{\failed}
+\FooIntercharClass "43 9
+\FooIntercharClass "45 9
+\FooIntercharClass "44 9
+\clist_if_in:cnTF {l_interchar_foo_chars_9_clist} {43-45} {\passed}{\failed}
+\FooIntercharClass `\L 9
+\FooIntercharClass `\M 9
+\FooIntercharClass `\O 9
+\FooIntercharClass `\N 9
+\clist_if_in:cnTF {l_interchar_foo_chars_9_clist} {4C-4F} {\passed}{\failed}
+\FooIntercharClass `\N 0
+\clist_if_in:cnTF {l_interchar_foo_chars_9_clist} {4C-4D} {\passed}{\failed}
+\FooIntercharClass `\L 0
+\FooIntercharClass `\M 0
+\FooIntercharClass `\N 0
+\FooIntercharClass `\O 0
+\FooIntercharClass `\E 0
+\FooIntercharClass `\C 0
+\FooIntercharClass `\D 0
+\clist_if_empty:cTF {l_interchar_foo_chars_9_clist} {\passed}{\failed}
 
-Testing \verb-\FOOinterchartoks #1 #2 = {#3}-
-\FOOinterchartoks \myclassU \myclassV = {\textcolor{red}{zzz}}
-\prop_get:NnN \l_interchar_FOO_toks_prop {4 5} \l_tmpa_tl
+Testing \verb-\FooIntercharToks #1 #2 = {#3}-
+\FooIntercharToks \myclassU \myclassV = {\textcolor{red}{zzz}}
+\prop_get:NnN \l_interchar_foo_toks_prop {4 5} \l_tmpa_tl
 \tl_if_eq:VnTF \l_tmpa_tl {\textcolor{red}{zzz}} {\passed}{\failed}
 
-Testing \verb-\FOOinterchartokenstate = #1-
-\FOOcharclass `\o = \myclassV
-\FOOinterchartokenstate = 1
+Testing \verb-\FooIntercharState = #1-
+\FooIntercharClass `\o = \myclassV
+\FooIntercharState = 1
 %aa\the\XeTeXinterchartoks 4 5 bb
 \tl_if_eq:VnTF {\XeTeXcharclass `\o} {5} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXinterchartoks 4 5} {\textcolor{red}{zzz}} {\passed}{\failed}
 
-\FOOinterchartokenstate = 2
-Testing \verb-\getFOOinterchartokenstate-:
-\ifnum \getFOOinterchartokenstate = 1 \passed \else \failed \fi
+\FooIntercharState = 2
+Testing \verb-\GetFooIntercharState-:
+\ifnum \GetFooIntercharState = 1 \passed \else \failed \fi
 
 \XeTeXinterchartokenstate = 0
-Testing \verb-\BARinterchartokenstate = #1-:
+Testing \verb-\BarIntercharState = #1-:
 \XeTeXinterchartokenstate = 1
-\newintercharscheme{BAR}
-\newBARintercharclass \myclassX
-\BARcharclass `\f \myclassX
-\BARcharclass `\x \myclassX
-\newBARintercharclass \myclassY
-\BARcharclass `\d \myclassY
-\BARcharclass `\g \myclassY
-\BARcharclass `\. \myclassY
-\BARinterchartoks 255 \myclassX = {\bgroup\color{orange}}
-\BARinterchartoks \myclassX 255 = {\egroup}
-\BARinterchartoks 255 \myclassY = {\bgroup\color{olive}}
-\BARinterchartoks \myclassY 255 = {\egroup}
-\tl_if_eq:xnTF \l_interchar_current_scheme_tl {FOO} {\passed}{\failed}
-\BARinterchartokenstate = 1
-\tl_if_eq:VnTF \l_interchar_current_scheme_tl {BAR} {\passed}{\failed}
+\newintercharscheme{bar}
+\NewBarIntercharClass \myclassX
+\BarIntercharClass `\f \myclassX
+\BarIntercharClass `\x \myclassX
+\NewBarIntercharClass \myclassY
+\BarIntercharClass `\d \myclassY
+\BarIntercharClass `\g \myclassY
+\BarIntercharClass `\. \myclassY
+\BarIntercharToks 255 \myclassX = {\bgroup\color{orange}}
+\BarIntercharToks \myclassX 255 = {\egroup}
+\BarIntercharToks 255 \myclassY = {\bgroup\color{olive}}
+\BarIntercharToks \myclassY 255 = {\egroup}
+\tl_if_eq:xnTF \l_interchar_current_scheme_tl {foo} {\passed}{\failed}
+\BarIntercharState = 1
+\tl_if_eq:VnTF \l_interchar_current_scheme_tl {bar} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXcharclass `\d} {5} {\passed}{\failed}
 \tl_if_eq:VnTF {\XeTeXinterchartoks 255 4} {\bgroup\color{orange}} {\passed}{\failed}
 
@@ -213,11 +213,9 @@ The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
 
-%\BARinterchartokenstate = 1
-\intercharstate[BAR]{1}
+\BarIntercharState = 1
 
-%\FOOinterchartokenstate = 1
-\intercharstate[FOO]{1}
+\FooIntercharState = 1
 
 The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
@@ -228,10 +226,10 @@ The quick brown fox jumps over the lazy dog.
 %\clist_show:c {l_interchar_default_chars_1_clist}
 %\clist_show:c {l_interchar_default_chars_2_clist}
 %\clist_show:c {l_interchar_default_chars_3_clist}
-%\clist_show:c {l_interchar_FOO_chars_4_clist}
-%\clist_show:c {l_interchar_FOO_chars_5_clist}
-%\prop_show:N \l_interchar_FOO_toks_prop
-%\prop_show:N \l_interchar_BAR_toks_prop
+%\clist_show:c {l_interchar_foo_chars_4_clist}
+%\clist_show:c {l_interchar_foo_chars_5_clist}
+%\prop_show:N \l_interchar_foo_toks_prop
+%\prop_show:N \l_interchar_bar_toks_prop
 
 \catcode `\_ = 8 \catcode `\: = 12
 %\char_set_catcode_ignore:n {`\ }%
