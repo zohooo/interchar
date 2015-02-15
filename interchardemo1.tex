@@ -7,7 +7,7 @@
 \newintercharscheme{FOO}
 
 \newintercharclass[FOO]{\myclassU}
-\intercharclass[FOO]{\myclassU}{`\o}
+\intercharclass[FOO]{`\o}{\myclassU}
 
 \interchartoks[FOO]{0}{\myclassU}{\bgroup\color{red}}
 \interchartoks[FOO]{255}{\myclassU}{\bgroup\color{red}}
@@ -24,8 +24,8 @@ The quick brown fox jumps over the lazy dog.
 \newintercharscheme{BAR}
 
 \newintercharclass[BAR]{\myclassX}
-\intercharclass[BAR]{\myclassX}{`\u}
-\intercharclass[BAR]{\myclassX}{`\e}
+\intercharclass[BAR]{`\u}{\myclassX}
+\intercharclass[BAR]{`\e}{\myclassX}
 
 \interchartoks[BAR]{0}{\myclassX}{\bgroup\color{blue}}
 \interchartoks[BAR]{255}{\myclassX}{\bgroup\color{blue}}

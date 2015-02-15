@@ -69,31 +69,31 @@ Testing \verb-\newintercharclass[FOO]{#2}-
 \newintercharclass[FOO]{\myclassV}
 \clist_if_in:NnTF \g_interchar_FOO_classes_clist {4} {\passed}{\failed}
 
-%\intercharclass{1}{"1234}
-%\intercharclass{2}{"FF45}
-%\intercharclass{3}{"4567}
+%\intercharclass{"1234}{1}
+%\intercharclass{"FF45}{2}
+%\intercharclass{"4567}{3}
 
 %  `\A  `\F  `\K  `\P  `\U  `\Z  `\a  `\f  `\k  `\p  `\u  `\z
 %  "41  "46  "4B  "50  "55  "5A  "61  "66  "6B  "70  "75  "7A
 %   65   70   75   80   85   90   97  102  107  112  117  122
 % '101 '106 '113 '120 '125 '132 '141 '146 '153 '160 '165 '172
 Testing \verb-\intercharclass[FOO]{#2}{#3}-
-\intercharclass[FOO]{9}{"4B}
+\intercharclass[FOO]{"4B}{9}
 \cs_if_exist:cTF {l_interchar_FOO_chars_9_clist} {\passed}{\failed}
-\intercharclass[FOO]{0}{"4B}
+\intercharclass[FOO]{"4B}{0}
 \clist_if_empty:cTF {l_interchar_FOO_chars_9_clist} {\passed}{\failed}
-\intercharclass[FOO]{1}{"5A}
-\intercharclass[FOO]{2}{"5A}
+\intercharclass[FOO]{"5A}{1}
+\intercharclass[FOO]{"5A}{2}
 \clist_if_in:cnTF {l_interchar_FOO_chars_2_clist} {5A} {\passed}{\failed}
-\intercharclass[FOO]{3}{"5A}
+\intercharclass[FOO]{"5A}{3}
 \clist_if_empty:cTF {l_interchar_FOO_chars_2_clist} {\passed}{\failed}
-\intercharclass[FOO]{3}{"44-"47}
+\intercharclass[FOO]{"44-"47}{3}
 \clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {44-47} {\passed}{\failed}
-\intercharclass[FOO]{3}{"50-"53}
+\intercharclass[FOO]{"50-"53}{3}
 \clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {50-53} {\passed}{\failed}
-\intercharclass[FOO]{2}{"48-"51}
+\intercharclass[FOO]{"48-"51}{2}
 \clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {52-53} {\passed}{\failed}
-\intercharclass[FOO]{2}{"45}
+\intercharclass[FOO]{"45}{2}
 \clist_if_in:cnTF {l_interchar_FOO_chars_3_clist} {46-47} {\passed}{\failed}
 
 Testing \verb-\getintercharclass[FOO]{#2}{#3}-
@@ -105,7 +105,7 @@ Testing \verb-\getintercharclass[FOO]{#2}{#3}-
 
 Testing \verb-\interchartoks[FOO]{#2}{#3}{#4}-
 \newintercharclass[FOO]{\myclassW}
-\intercharclass[FOO]{\myclassW}{`\o}
+\intercharclass[FOO]{`\o}{\myclassW}
 \interchartoks[FOO]{0}{\myclassW}{\bgroup\color{blue}}
 \interchartoks[FOO]{255}{\myclassW}{\bgroup\color{blue}}
 \interchartoks[FOO]{\myclassW}{0}{\egroup}
