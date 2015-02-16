@@ -1,0 +1,178 @@
+% -*- coding: utf-8 -*-
+% Package interchar: managing character class schemes of XeTeX
+% Copyright (C) 2015 Zou Hu <zohooo@yeah.net>
+%
+% Please report bugs, problems, and suggestions via
+%     https://github.com/zohooo/interchar
+%
+% This file may be distributed and/or modified under the conditions
+% of the LaTeX Project Public License, either version 1.3 of this
+% license or (at your option) any later version. The latest version
+% of this license is in
+%     http://www.latex-project.org/lppl.txt
+\documentclass{article}
+\usepackage[b5paper,margin=17mm]{geometry}
+\usepackage{xcolor,hyperref,float,makedoc,niceverb,interchar}
+\hypersetup{
+   colorlinks,
+   citecolor = teal,
+   linkcolor = blue,
+   urlcolor = purple,
+   pdfstartview = {FitH},
+   bookmarksnumbered
+}
+\begin{document}
+
+\title{Documentation for package \texttt{interchar}
+\footnote{Please report bugs to \url{https://github.com/zohooo/interchar}.}}
+\author{Zou Hu (zohooo@yeah.net)}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+With XeTeX\rq s character class mechanism, we could put characters into different classes,
+and insert some tokens to the input stream between characters in one class and those in
+another class. This mechanism is originally used for switching fonts and adjusting spaces.
+But it has many other useful applications.
+
+By default, all characters are of class 0, except CJK ideographs are of class 1, CJK left
+punctuation of classes 2, CJK right punctuation of classes 3, text boundaries (glues, kerns,
+maths, boxes, etc.) of class 255, and several characters of class 256 (this class is ignored).
+
+\MakeNormal\`
+\newintercharclass{\myclass}
+\intercharclass{`\o}{\myclass}
+\interchartoks{0}{\myclass}{\bgroup\color{red}}
+\interchartoks{255}{\myclass}{\bgroup\color{red}}
+\interchartoks{\myclass}{0}{\egroup}
+\interchartoks{\myclass}{255}{\egroup}
+\intercharstate{1}
+\MakeActive\`
+Package 'interchar' is written for making character class mechanism more easy to use. For example,
+after loading the package with `\usepackage{interchar}', you may change the color of every
+occurrences of character \texttt{o}:
+\intercharstate[foo]{0}
+\begin{verbatim}
+\newintercharclass{\myclass}
+\intercharclass{`\o}{\myclass}
+\interchartoks{0}{\myclass}{\bgroup\color{red}}
+\interchartoks{255}{\myclass}{\bgroup\color{red}}
+\interchartoks{\myclass}{0}{\egroup}
+\interchartoks{\myclass}{255}{\egroup}
+\intercharstate{1}
+\end{verbatim}
+
+There are some existing packages using this mechanism, such as 'polyglossia', 'xeCJK' and
+'xesearch'. But since one character could only be put into one single class, when loading two
+or more of these packages simultaneously, it would be very likely that some conflicts occur.
+
+Package 'interchar' also provides some migration commands for these packages. With minor changes
+these packages should be compatible with 'interchar', and users could switch between different
+character class schemes when loading these packages at the same time.
+
+\section{Commands for normal users}
+
+\begin{itemize}
+  \item |\newintercharscheme{<scheme>}| creates a new char class scheme. For example,
+        \begin{verbatim}\newintercharscheme{foo}\end{verbatim}
+        There is a prebuilt `default' scheme which you need not to create it.
+        The first argument of the other commands in this section is optional;
+        its default value is `default'.
+  \item |\intercharstate[<scheme>]{<state-code>}| changes current scheme.
+        If '<state-code>' is positive, changes current scheme to `<scheme>';
+        otherwise, changes current scheme to `default'. For example,
+        \begin{verbatim}\intercharstate[foo]{1}\end{verbatim}
+  \item |\getintercharstate[<scheme>]{\cs}| gets current state of the specified scheme
+        and store the state code in `\cs'. For example,
+        \begin{verbatim}\getintercharstate[foo]{\mystate}\end{verbatim}
+  \item |\newintercharclass[<scheme>]{\cs}| creates a new char class in the specified scheme
+        and stores the class number in `\cs'. For example,
+        \begin{verbatim}\newintercharclass[foo]{\myclass}\end{verbatim}
+  \item |\intercharclass[<scheme>]{<char-range>}{<char-class>}| moves all characters within
+        `<char-range>' to the class `<char-class>' in the specified scheme. For example,
+\begin{verbatim}
+\intercharclass[foo]{`\@}{255}
+\intercharclass[foo]{`\a-`\z}{\myclass}
+\end{verbatim}  
+  \item |\getintercharclass[<scheme>]{<char-code>}{\cs}| gets the class number of the specified
+        character in the specified scheme, and stores the result in `\cs'. For example,
+        \begin{verbatim}\getintercharclass[foo]{`\@}{\result}\end{verbatim}
+  \item |\interchartoks[<scheme>]{<char-class-1>}{<char-class-2>}{<tokens>}| defines tokens to be
+        inserted between `<char-class-1>' and `<char-class-2>' (in that order) in the specified
+        scheme. For example,
+\begin{verbatim}
+\interchartoks[foo]{0}{\myclass}{\bgroup\color{red}}
+\interchartoks[foo]{\myclass}{0}{\egroup}
+\end{verbatim}
+  \item |\getinterchartoks[<scheme>]{<char-class-1>}{<char-class-2>}{\cs}| gets the tokens to be
+        inserted between `<char-class-1>' and `<char-class-2>' in the specified scheme, and stores
+        the result in `\cs'. For example,
+        \begin{verbatim}\getinterchartoks[foo]{0}{\myclass}{\mytoks}\end{verbatim}
+\end{itemize}
+
+\section{Commands for macro writers}
+
+For macro writers, we provide |\NewIntercharScheme| command which is an alias of user command `\newintercharscheme'. When you write `\NewIntercharScheme{foo}', 'interchar' package also 
+creates the following migration commands for you:
+
+\begin{table}[H]
+\MakeNormal\& \MakeNormal\` \MakeNormal\| \catcode`\?=13 \let?=| \MakeActive\` \MakeActive\|
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{?l?l?}
+  \hline
+  \textbf{Migration Command} & \textbf{Analogous to Commands} \\ \hline
+  |\FooIntercharState = <state-code>| & `\XeTeXinterchartokenstate' \\
+  |\GetFooIntercharState| & `\the\XeTeXinterchartokenstate' \\
+  |\NewFooIntercharClass <control-sequence>| & `\newXeTeXintercharclass' \\
+  |\FooIntercharClass <char-code> = <char-class>| & `\XeTeXcharclass' \\
+  |\GetFooIntercharClass <char-code>| & `\the\XeTeXcharclass'. \\
+  |\FooIntercharToks <class1> <class2> = {<toks>}| & `\XeTeXinterchartoks' \\
+  |\GetFooIntercharToks <class1> <class2>| & `\the\XeTeXinterchartoks' \\
+  \hline
+\end{tabular}
+\end{table}
+
+Within the command specifications in the above table, all of the equal signs `='
+and most of the spaces are optional.
+
+If you are the author of package 'foo' which use XeTeX\rq s char class mechanism,
+with some minor changes you could make your package compatible with other packages.
+
+\begin{enumerate}
+  \item Add the following lines to the beginning of your package file:
+\begin{verbatim}
+\ifdefined\NewIntercharScheme
+    \NewIntercharScheme{foo}%
+\else
+    \let \FooIntercharState = \XeTeXinterchartokenstate
+    \def \GetFooIntercharState {\the\XeTeXinterchartokenstate}%
+    \let \NewFooIntercharClass = \newXeTeXintercharclass
+    \let \FooIntercharClass = \XeTeXcharclass
+    \def \GetFooIntercharClass {\the\XeTeXcharclass}%
+    \let \FooIntercharToks = \XeTeXinterchartoks
+    \def \GetFooIntercharToks {\the\XeTeXinterchartoks}%
+\fi
+\end{verbatim}
+  \item Rename every occurrence of XeTeX\rq s commands in your package file with the new name
+        according to the above table.
+\end{enumerate}
+
+After these modifications, when users doesn\rq t load 'interchar', your package should
+behave as before, but when users load 'interchar' package \textbf{before} your package,
+'interchar' will takes over XeTeX\rq s char class mechanism, therefore users could switch
+among different char class schemes at will.
+
+Note that `\GetFooIntercharState' is \textbf{fully expandable}, which means you could write
+the following conditional test:
+\begin{verbatim}\ifnum \GetFooIntercharState > 0 doA \else doB \fi\end{verbatim}
+However `\GetFooIntercharClass' and `\GetFooIntercharToks' are
+\textbf{not fully expandable} for the time being.
+
+\section{Implementation}
+
+%\AutoCmdSyntaxVerb
+\NoEmptyCodeLines
+\MakeInputJobDoc[sty][ltx]{0}{\ProcessInputWith{PScomment}}
+
+\end{document}
