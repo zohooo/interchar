@@ -7,21 +7,53 @@ tempdir = "./temp/"
 
 function help()
   print ""
-  print " icbuild unicode   - regenerate char class data "
-  print " icbuild package   - create CTAN-ready package  "
   print " icbuild cleanup   - clean up current directory "
+  print " icbuild package   - create CTAN-ready package  "
+  print " icbuild unicode   - regenerate char class data "
   print ""
 end
 
 function main(target)
-  if target == "unicode" then
-    unicode()
-  elseif target == "package" then
-    print("package")
-  elseif target == "cleanup" then
+  if target == "cleanup" then
     print("cleanup")
+  elseif target == "package" then
+    package()
+  elseif target == "unicode" then
+    unicode()
   else
     help()
+  end
+end
+
+function package()
+  local dosbat = [[
+    xelatex interchar
+    xelatex interchar
+    xelatex interchartest
+    xelatex interchardemo1
+    if not exist temp\tex\xelatex\interchar md temp\tex\xelatex\interchar
+    copy /y interchar.sty temp\tex\xelatex\interchar
+    if not exist temp\doc\xelatex\interchar md temp\doc\xelatex\interchar
+    copy /y interchar.tex temp\doc\xelatex\interchar
+    copy /y interchar.pdf temp\doc\xelatex\interchar
+    copy /y interchartest.tex temp\doc\xelatex\interchar
+    copy /y interchartest.pdf temp\doc\xelatex\interchar
+    copy /y interchardemo1.tex temp\doc\xelatex\interchar
+    copy /y interchardemo1.pdf temp\doc\xelatex\interchar
+    copy /y README temp\doc\xelatex\interchar
+    if not exist temp\interchar md temp\interchar
+    copy /y interchar.sty temp\interchar
+    copy /y interchar.tex temp\interchar
+    copy /y interchar.pdf temp\interchar
+    copy /y README temp\interchar
+    if exist temp\interchar.tds.zip del temp\interchar.tds.zip
+    if exist temp\interchar.zip del temp\interchar.zip
+    cd temp && zip -r -X -ll interchar.tds.zip doc tex
+    cd temp && zip -r -X -ll interchar.zip interchar.tds.zip interchar
+  ]]
+  --- temp\unzip.exe -Z -v temp\interchar.tds.zip
+  for line in string.gmatch(dosbat, "%s*([^\n]*)%s*\n") do
+    os.execute(line)
   end
 end
 
